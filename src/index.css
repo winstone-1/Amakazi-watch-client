@@ -1,0 +1,84 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap');
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', sans-serif;
+  background-color: #f6efe9; /* Very soft warm sand background */
+  color: #2c2220; /* Deep charcoal/chocolate */
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Outfit', sans-serif;
+}
+
+/* Glassmorphism custom components */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 8px 32px 0 rgba(224, 83, 60, 0.04);
+}
+
+.glass-panel-light {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+}
+
+.glass-card-hover {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-card-hover:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.65);
+  box-shadow: 0 12px 40px 0 rgba(224, 83, 60, 0.08);
+}
+
+/* Custom Scrollbar for subtle premium look */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(224, 83, 60, 0.2);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(224, 83, 60, 0.4);
+}
+
+/* Ant Design Global Customizations to respect Tailwind */
+.ant-btn-primary {
+  background-color: #e0533c !important;
+  border-color: #e0533c !important;
+  box-shadow: 0 4px 12px rgba(224, 83, 60, 0.2) !important;
+}
+
+.ant-btn-primary:hover {
+  background-color: #c9432d !important;
+  border-color: #c9432d !important;
+}
+
+.ant-menu-item-selected {
+  background-color: rgba(224, 83, 60, 0.1) !important;
+  color: #e0533c !important;
+}
+
+.ant-menu-light .ant-menu-item-selected::after {
+  border-bottom-color: #e0533c !important;
+}
