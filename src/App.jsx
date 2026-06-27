@@ -69,7 +69,6 @@ function App() {
                     
                     <Route element={<ProtectedRoute />}>
                       <Route element={<Layout />}>
-                        {/* Main Pages */}
                         <Route path="/dashboard" element={<Dashboard />} />
                         <Route path="/reports" element={<Reports />} />
                         <Route path="/safety" element={<Safety />} />
@@ -83,7 +82,6 @@ function App() {
                         <Route path="/profile" element={<Profile />} />
                         <Route path="/settings" element={<Settings />} />
                         
-                        {/* Feature Pages */}
                         <Route path="/safety/timer" element={<SafetyTimer />} />
                         <Route path="/safety/safe-word" element={<SafeWord />} />
                         <Route path="/safety/risk-assessment" element={<RiskAssessment />} />
