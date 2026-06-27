@@ -1,66 +1,50 @@
 import { useTheme } from '../context/ThemeContext';
 import { Settings as SettingsIcon, Moon, Sun, Globe, Bell, Shield } from 'lucide-react';
+import GlassCard from '../components/common/GlassCard';
 
 function Settings() {
   const { darkMode, toggleDarkMode } = useTheme();
 
   return (
-    <div className="transition-colors duration-300">
-      <div className="bg-white dark:bg-secondary rounded-xl shadow-sm p-6 border border-gray-100 dark:border-gray-700">
-        <div className="flex items-center gap-3 mb-4">
-          <SettingsIcon className="w-6 h-6 text-primary" />
-          <h1 className="text-2xl font-bold text-secondary dark:text-white">Settings</h1>
-        </div>
-        <p className="text-gray-500 dark:text-gray-400 mb-4">Application settings and preferences.</p>
-
-        <div className="space-y-3">
-          <div className={`p-4 rounded-lg ${darkMode ? 'bg-gray-700/50' : 'bg-light'} flex items-center justify-between`}>
-            <div className="flex items-center gap-3">
-              {darkMode ? <Moon className="w-5 h-5 text-yellow-400" /> : <Sun className="w-5 h-5 text-gray-600" />}
-              <span className="text-secondary dark:text-white">Dark Mode</span>
-            </div>
-            <button
-              onClick={toggleDarkMode}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
-                darkMode ? 'bg-yellow-500 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-              }`}
-            >
-              {darkMode ? 'On' : 'Off'}
-            </button>
+    <div className="space-y-6 transition-colors duration-300">
+      <GlassCard className="p-6 sm:p-8">
+        <div className="flex items-center gap-3">
+          <div className="rounded-2xl bg-primary/10 p-2 text-primary">
+            <SettingsIcon className="h-6 w-6" />
           </div>
-
-          <div className={`p-4 rounded-lg ${darkMode ? 'bg-gray-700/50' : 'bg-light'} flex items-center justify-between`}>
-            <div className="flex items-center gap-3">
-              <Globe className="w-5 h-5 text-blue-500" />
-              <span className="text-secondary dark:text-white">Language</span>
-            </div>
-            <select className={`px-4 py-2 rounded-lg border ${
-              darkMode ? 'bg-gray-700 border-gray-600 text-white' : 'bg-white border-gray-200'
-            } focus:outline-none focus:ring-2 focus:ring-primary`}>
-              <option value="en">English</option>
-              <option value="sw">Kiswahili</option>
-            </select>
-          </div>
-
-          <div className={`p-4 rounded-lg ${darkMode ? 'bg-gray-700/50' : 'bg-light'} flex items-center justify-between`}>
-            <div className="flex items-center gap-3">
-              <Bell className="w-5 h-5 text-purple-500" />
-              <span className="text-secondary dark:text-white">Notifications</span>
-            </div>
-            <label className="relative inline-flex items-center cursor-pointer">
-              <input type="checkbox" className="sr-only peer" defaultChecked />
-              <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-500 peer-checked:bg-primary"></div>
-            </label>
-          </div>
-
-          <div className={`p-4 rounded-lg ${darkMode ? 'bg-gray-700/50' : 'bg-light'} flex items-center justify-between`}>
-            <div className="flex items-center gap-3">
-              <Shield className="w-5 h-5 text-green-500" />
-              <span className="text-secondary dark:text-white">2FA Security</span>
-            </div>
-            <button className="text-primary font-medium hover:underline text-sm">Enable</button>
+          <div>
+            <h1 className="text-2xl font-bold text-secondary dark:text-white">Settings</h1>
+            <p className="text-sm text-slate-500 dark:text-slate-400">Personalize the experience and stay in control of your privacy.</p>
           </div>
         </div>
+      </GlassCard>
+
+      <div className="space-y-3">
+        {[
+          { label: 'Dark Mode', icon: darkMode ? Moon : Sun, value: darkMode ? 'On' : 'Off', action: toggleDarkMode, accent: darkMode ? 'text-yellow-400' : 'text-slate-600' },
+          { label: 'Language', icon: Globe, value: 'English', action: null, accent: 'text-sky-500' },
+          { label: 'Notifications', icon: Bell, value: 'Enabled', action: null, accent: 'text-violet-500' },
+          { label: '2FA Security', icon: Shield, value: 'Enable', action: null, accent: 'text-emerald-500' },
+        ].map((item) => {
+          const Icon = item.icon;
+          return (
+            <GlassCard key={item.label} className="flex items-center justify-between p-4">
+              <div className="flex items-center gap-3">
+                <div className={`rounded-2xl bg-white/70 p-2 dark:bg-slate-800/70 ${item.accent}`}>
+                  <Icon className="h-5 w-5" />
+                </div>
+                <span className="font-medium text-secondary dark:text-white">{item.label}</span>
+              </div>
+              {item.action ? (
+                <button onClick={item.action} className={`rounded-full px-4 py-2 text-sm font-semibold ${darkMode ? 'bg-yellow-500 text-white' : 'bg-slate-100 text-slate-700'}`}>
+                  {item.value}
+                </button>
+              ) : (
+                <span className="text-sm font-semibold text-slate-500 dark:text-slate-400">{item.value}</span>
+              )}
+            </GlassCard>
+          );
+        })}
       </div>
     </div>
   );

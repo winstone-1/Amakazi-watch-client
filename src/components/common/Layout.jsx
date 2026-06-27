@@ -1,6 +1,6 @@
-import { Outlet, Link, useNavigate } from 'react-router-dom';
+import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import { 
-  Shield, LogOut, User, Settings, Home, FileText, ShieldAlert, 
+  Shield, LogOut, Home, FileText, ShieldAlert, 
   FolderLock, Users, Scale, Building2, BookOpen, BarChart3, Bell,
   Moon, Sun, Menu, X
 } from 'lucide-react';
@@ -14,6 +14,7 @@ function Layout() {
   const { success } = useToast();
   const { darkMode, toggleDarkMode } = useTheme();
   const navigate = useNavigate();
+  const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const handleLogout = () => {
@@ -36,66 +37,73 @@ function Layout() {
 
   return (
     <div className={`min-h-screen ${darkMode ? 'dark' : ''}`}>
-      <div className="min-h-screen bg-light dark:bg-dark transition-colors duration-300 flex">
-        {/* Mobile Sidebar Toggle */}
+      <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(255,107,53,0.14),_transparent_28%),linear-gradient(135deg,_#fdf6ec_0%,_#f8fafc_100%)] dark:bg-[radial-gradient(circle_at_top_left,_rgba(255,107,53,0.18),_transparent_28%),linear-gradient(135deg,_#1A2A3A_0%,_#16212e_100%)] transition-colors duration-300 flex">
         <button
           onClick={() => setSidebarOpen(!sidebarOpen)}
-          className="md:hidden fixed top-4 left-4 z-50 p-2 bg-white dark:bg-secondary rounded-lg shadow-lg"
+          className="md:hidden fixed top-4 left-4 z-50 rounded-xl border border-white/70 bg-white/80 p-2.5 shadow-lg backdrop-blur-xl"
         >
-          {sidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          {sidebarOpen ? <X className="w-6 h-6 text-secondary" /> : <Menu className="w-6 h-6 text-secondary" />}
         </button>
 
-        {/* Sidebar */}
         <aside className={`
-          fixed md:relative z-40 w-64 bg-white dark:bg-secondary shadow-lg border-r border-gray-200 dark:border-gray-700 
+          fixed md:relative z-40 w-64 rounded-r-[28px] border-r border-white/70 bg-white/70 shadow-[20px_0_60px_-30px_rgba(15,23,42,0.3)] backdrop-blur-xl dark:border-white/10 dark:bg-slate-800/70
           transition-transform duration-300 h-screen
           ${sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
         `}>
-          <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+          <div className="border-b border-slate-200/70 p-4 dark:border-white/10">
             <div className="flex items-center gap-2">
-              <Shield className="w-8 h-8 text-primary" />
-              <span className="text-xl font-bold text-secondary dark:text-white">AmakaziWatch</span>
+              <div className="rounded-2xl bg-primary/10 p-2">
+                <Shield className="w-7 h-7 text-primary" />
+              </div>
+              <span className="text-lg font-bold text-secondary dark:text-white">AmakaziWatch</span>
             </div>
           </div>
-          <nav className="p-2 overflow-y-auto h-[calc(100vh-80px)]">
-            {navItems.map((item) => (
-              <Link
-                key={item.path}
-                to={item.path}
-                onClick={() => setSidebarOpen(false)}
-                className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-orange-50 dark:hover:bg-orange-900/20 hover:text-primary transition group"
-              >
-                <item.icon className="w-5 h-5" />
-                <span>{item.label}</span>
-              </Link>
-            ))}
+          <nav className="h-[calc(100vh-84px)] overflow-y-auto p-3">
+            {navItems.map((item) => {
+              const active = location.pathname.startsWith(item.path);
+              return (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  onClick={() => setSidebarOpen(false)}
+                  className={`flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium transition ${
+                    active
+                      ? 'bg-primary text-white shadow-lg'
+                      : 'text-slate-600 hover:bg-orange-50 hover:text-primary dark:text-slate-300 dark:hover:bg-orange-900/20'
+                  }`}
+                >
+                  <item.icon className="w-5 h-5" />
+                  <span>{item.label}</span>
+                </Link>
+              );
+            })}
           </nav>
         </aside>
 
-        {/* Main Content */}
         <div className="flex-1 flex flex-col min-h-screen">
-          {/* Top Nav */}
-          <header className="bg-white dark:bg-secondary shadow-sm border-b border-gray-200 dark:border-gray-700 px-4 md:px-6 py-3 flex justify-between items-center sticky top-0 z-30">
+          <header className="sticky top-0 z-30 flex items-center justify-between border-b border-white/70 bg-white/70 px-4 py-3 backdrop-blur-xl dark:border-white/10 dark:bg-slate-800/70 md:px-6">
             <div className="flex items-center gap-4">
-              <h1 className="text-xl font-semibold text-secondary dark:text-white hidden md:block">Dashboard</h1>
+              <h1 className="hidden text-xl font-semibold text-secondary dark:text-white md:block">{navItems.find((item) => location.pathname.startsWith(item.path))?.label || 'Dashboard'}</h1>
             </div>
             <div className="flex items-center gap-3">
               <button
                 onClick={toggleDarkMode}
-                className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition"
+                className="rounded-xl p-2.5 transition hover:bg-slate-100 dark:hover:bg-slate-700"
                 aria-label="Toggle dark mode"
               >
-                {darkMode ? <Sun className="w-5 h-5 text-yellow-400" /> : <Moon className="w-5 h-5 text-gray-600" />}
+                {darkMode ? <Sun className="w-5 h-5 text-yellow-400" /> : <Moon className="w-5 h-5 text-slate-600" />}
               </button>
-              <Bell className="w-5 h-5 text-gray-400 hover:text-primary cursor-pointer transition" />
+              <div className="rounded-xl border border-slate-200/70 bg-white/70 p-2 text-slate-400 dark:border-white/10 dark:bg-slate-800/70">
+                <Bell className="w-5 h-5" />
+              </div>
               <div className="flex items-center gap-3">
-                <div className="text-right hidden sm:block">
+                <div className="hidden text-right sm:block">
                   <div className="text-sm font-medium text-secondary dark:text-white">{user?.username || 'User'}</div>
-                  <div className="text-xs text-gray-400">{user?.role || 'Survivor'}</div>
+                  <div className="text-xs text-slate-400">{user?.role || 'Survivor'}</div>
                 </div>
                 <button
                   onClick={handleLogout}
-                  className="p-2 text-gray-400 hover:text-red-500 transition"
+                  className="rounded-xl p-2 text-slate-400 transition hover:bg-red-50 hover:text-red-500"
                 >
                   <LogOut className="w-5 h-5" />
                 </button>
@@ -103,8 +111,7 @@ function Layout() {
             </div>
           </header>
 
-          {/* Page Content */}
-          <main className="flex-1 p-4 md:p-6 bg-light dark:bg-dark transition-colors duration-300">
+          <main className="flex-1 p-4 md:p-6 transition-colors duration-300">
             <Outlet />
           </main>
         </div>
