@@ -1,7 +1,7 @@
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import { 
   Shield, LogOut, Home, FileText, ShieldAlert, 
-  FolderLock, Users, Scale, Building2, BookOpen, BarChart3, Bell, MapPin,
+  FolderLock, Users, Scale, Building2, BookOpen, BarChart3, Bell, Map,
   Moon, Sun, Menu, X
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
@@ -26,7 +26,7 @@ function Layout() {
   const navItems = [
     { path: '/dashboard', icon: Home, label: 'Dashboard' },
     { path: '/reports', icon: FileText, label: 'Reports' },
-    { path: '/heatmap', icon: MapPinned, label: 'Heatmap' },
+    { path: '/heatmap', icon: Map, label: 'Heatmap' },
     { path: '/safety', icon: ShieldAlert, label: 'Safety' },
     { path: '/vault', icon: FolderLock, label: 'Vault' },
     { path: '/peer-support', icon: Users, label: 'Peer Support' },
