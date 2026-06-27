@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useState } from 'react';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { Mail, Lock, ArrowRight, Shield, Chrome, Sun, Moon } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
@@ -13,16 +13,13 @@ function Login() {
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  const { login, isAuthenticated } = useAuth();
+  const location = useLocation();
+  const { login } = useAuth();
   const { success, error } = useToast();
   const { googleLogin, isLoading: googleLoading } = useGoogleAuth();
   const { darkMode, toggleDarkMode } = useTheme();
 
-  useEffect(() => {
-    if (isAuthenticated) {
-      navigate('/dashboard', { replace: true });
-    }
-  }, [isAuthenticated, navigate]);
+  const from = location.state?.from?.pathname || '/dashboard';
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -36,7 +33,7 @@ function Login() {
       const { access, refresh, user } = response.data;
       login(user, access, refresh);
       success('Welcome back!');
-      navigate('/dashboard', { replace: true });
+      navigate(from, { replace: true });
     } catch (err) {
       error('Invalid credentials. Please try again.');
       setIsLoading(false);

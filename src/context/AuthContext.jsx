@@ -15,6 +15,10 @@ export function AuthProvider({ children }) {
       if (storedToken && storedUser && storedUser !== 'undefined') {
         setToken(storedToken);
         setUser(JSON.parse(storedUser));
+      } else {
+        // Clean up invalid data
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
       }
     } catch (error) {
       console.error('Error loading auth state:', error);
