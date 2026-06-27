@@ -83,6 +83,7 @@ function Layout() {
               <button
                 onClick={toggleDarkMode}
                 className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition"
+                aria-label="Toggle dark mode"
               >
                 {darkMode ? <Sun className="w-5 h-5 text-yellow-400" /> : <Moon className="w-5 h-5 text-gray-600" />}
               </button>
@@ -103,7 +104,7 @@ function Layout() {
           </header>
 
           {/* Page Content */}
-          <main className="flex-1 p-4 md:p-6">
+          <main className="flex-1 p-4 md:p-6 bg-light dark:bg-dark transition-colors duration-300">
             <Outlet />
           </main>
         </div>
