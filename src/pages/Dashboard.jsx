@@ -1,9 +1,0 @@
-function Dashboard() {
-  return (
-    <div className="p-8">
-      <h1 className="text-2xl font-bold text-[#2C3E50]">Dashboard</h1>
-      <p className="text-gray-600 mt-2">This is the Dashboard page.</p>
-    </div>
-  );
-}
-export default Dashboard;

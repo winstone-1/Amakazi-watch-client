@@ -15,6 +15,7 @@ export function GoogleAuthProvider({ children }) {
     onSuccess: async (tokenResponse) => {
       setIsLoading(true);
       try {
+        // Get user info from Google
         const userInfoResponse = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
           headers: {
             Authorization: `Bearer ${tokenResponse.access_token}`,
@@ -22,27 +23,39 @@ export function GoogleAuthProvider({ children }) {
         });
         const userInfo = await userInfoResponse.json();
 
+        // Send to your backend
         const response = await api.post('/auth/google/', {
           access_token: tokenResponse.access_token,
           user_info: userInfo,
         });
 
         const { user, access, refresh } = response.data;
+        
+        // Save to localStorage
+        localStorage.setItem('token', access);
+        localStorage.setItem('refresh', refresh);
+        localStorage.setItem('user', JSON.stringify(user));
+        
+        // Update auth context
         login(user, access, refresh);
+        
         success('Successfully signed in with Google!');
         
-        // Use window.location.replace to prevent history issues
-        window.location.replace('/dashboard');
+        // Navigate to dashboard
+        window.location.href = '/dashboard';
       } catch (err) {
         error('Google sign in failed. Please try again.');
         console.error('Google auth error:', err);
         setIsLoading(false);
       }
     },
-    onError: () => {
+    onError: (errorResponse) => {
+      console.error('Google login error:', errorResponse);
       error('Google sign in cancelled or failed. Please try again.');
       setIsLoading(false);
     },
+    // Use popup mode - this avoids redirect URI issues
+    flow: 'popup',
   });
 
   return (
