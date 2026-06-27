@@ -1,36 +1,36 @@
-import React, { createContext, useContext, useEffect } from 'react';
-import { useStore } from '../store/store';
+import { createContext, useState, useContext } from 'react';
 
-const AuthContext = createContext(null);
+const AuthContext = createContext();
 
-export const AuthProvider = ({ children }) => {
-  const { user, token, role, is2faVerified, setAuth, clearAuth, set2faVerified } = useStore();
+export function AuthProvider({ children }) {
+  const [user, setUser] = useState(() => {
+    const saved = localStorage.getItem('user');
+    return saved ? JSON.parse(saved) : null;
+  });
+  const [token, setToken] = useState(localStorage.getItem('token'));
 
-  const isAuthenticated = !!token && (!user || is2faVerified);
+  const login = (userData, accessToken) => {
+    setUser(userData);
+    setToken(accessToken);
+    localStorage.setItem('token', accessToken);
+    localStorage.setItem('user', JSON.stringify(userData));
+  };
+
+  const logout = () => {
+    setUser(null);
+    setToken(null);
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    window.location.href = '/login';
+  };
 
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        token,
-        role,
-        is2faVerified,
-        isAuthenticated,
-        login: setAuth,
-        logout: clearAuth,
-        verify2FAStatus: set2faVerified,
-      }}
-    >
+    <AuthContext.Provider value={{ user, token, login, logout, isAuthenticated: !!token }}>
       {children}
     </AuthContext.Provider>
   );
-};
+}
 
-export const useAuthContext = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuthContext must be used within an AuthProvider');
-  }
-  return context;
-};
-export default AuthContext;
+export function useAuth() {
+  return useContext(AuthContext);
+}

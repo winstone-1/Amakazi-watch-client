@@ -1,29 +1,22 @@
-import React, { createContext, useContext } from 'react';
-import { useStore } from '../store/store';
-import { TRANSLATIONS } from '../utils/constants';
+import { createContext, useState, useContext } from 'react';
 
-const LanguageContext = createContext(null);
+const LanguageContext = createContext();
 
-export const LanguageProvider = ({ children }) => {
-  const language = useStore((state) => state.language);
-  const setLanguage = useStore((state) => state.setLanguage);
+export function LanguageProvider({ children }) {
+  const [language, setLanguage] = useState(localStorage.getItem('language') || 'en');
 
-  const t = (key) => {
-    return TRANSLATIONS[language]?.[key] || TRANSLATIONS['en']?.[key] || key;
+  const switchLanguage = (lang) => {
+    setLanguage(lang);
+    localStorage.setItem('language', lang);
   };
 
   return (
-    <LanguageContext.Provider value={{ language, setLanguage, t }}>
+    <LanguageContext.Provider value={{ language, switchLanguage }}>
       {children}
     </LanguageContext.Provider>
   );
-};
+}
 
-export const useTranslation = () => {
-  const context = useContext(LanguageContext);
-  if (!context) {
-    throw new Error('useTranslation must be used within a LanguageProvider');
-  }
-  return context;
-};
-export default LanguageContext;
+export function useLanguage() {
+  return useContext(LanguageContext);
+}

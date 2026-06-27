@@ -1,20 +1,9 @@
-import React from 'react';
-import Layout from '../components/common/Layout';
-import LegalBotComponent from '../components/legal/LegalBot';
-
-export const LegalBot = () => {
+function LegalBot() {
   return (
-    <Layout>
-      <div className="space-y-6 max-w-4xl mx-auto">
-        <div>
-          <h1 className="text-3xl font-extrabold text-brand-dark tracking-tight">Legal Assistant</h1>
-          <p className="text-brand-muted text-sm mt-1">Get immediate advice on Kenyan domestic violence laws and protection order applications.</p>
-        </div>
-
-        <LegalBotComponent />
-      </div>
-    </Layout>
+    <div className="p-8">
+      <h1 className="text-2xl font-bold text-[#2C3E50]">LegalBot</h1>
+      <p className="text-gray-600 mt-2">This is the LegalBot page.</p>
+    </div>
   );
-};
-
+}
 export default LegalBot;
