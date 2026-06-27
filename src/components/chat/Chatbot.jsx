@@ -1,36 +1,67 @@
-import { useState, useRef, useEffect } from 'react';
-import { Send, MessageCircle, X, Minimize2, Maximize2, Bot } from 'lucide-react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { MessageCircle, X, Minimize2, Maximize2, Bot, Sparkles } from 'lucide-react';
+import { useTheme } from '../../context/ThemeContext';
 import { useToast } from '../../context/ToastContext';
 import api from '../../api/axios';
+import ChatMessage from './ChatMessage';
+import ChatInput from './ChatInput';
+import QuickReplies from './QuickReplies';
+import TypingIndicator from './TypingIndicator';
 
 function Chatbot() {
+  const { darkMode } = useTheme();
+  const { error: showError } = useToast();
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
-  const [messages, setMessages] = useState([
-    {
-      id: 1,
-      role: 'bot',
-      content: 'Hello! I am AmakaziWatch AI Assistant. I can help you with legal rights, safety planning, or connect you to resources. How can I help you today?',
-      timestamp: new Date().toISOString(),
-    },
-  ]);
+  const [messages, setMessages] = useState(() => {
+    if (typeof window === 'undefined') return [];
+    const stored = localStorage.getItem('amakazi-chat-history');
+    if (stored) {
+      try {
+        return JSON.parse(stored);
+      } catch {
+        return [];
+      }
+    }
+    return [
+      {
+        id: 1,
+        role: 'bot',
+        content: 'Hello! I am AmakaziWatch AI Assistant. I can help you with legal rights, safety planning, or connect you to resources. How can I help you today?',
+        timestamp: new Date().toISOString(),
+      },
+    ];
+  });
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
-  const { error: showError } = useToast();
 
-  // Auto-scroll to bottom of messages
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages, isLoading]);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('amakazi-chat-history', JSON.stringify(messages));
+    }
   }, [messages]);
 
-  const handleSend = async () => {
-    if (!input.trim()) return;
+  const quickReplies = useMemo(() => [
+    { label: 'My Legal Rights', value: 'What are my rights if I experience abuse?' },
+    { label: 'Find Help', value: 'How do I find help near me?' },
+    { label: 'Safety Plan', value: 'Help me create a safety plan' },
+    { label: 'Report Abuse', value: 'How do I report abuse?' },
+  ], []);
+
+  const handleSend = async (customValue = input) => {
+    const trimmed = customValue.trim();
+    if (!trimmed) return;
 
     const userMessage = {
       id: Date.now(),
       role: 'user',
-      content: input.trim(),
+      content: trimmed,
       timestamp: new Date().toISOString(),
     };
 
@@ -41,10 +72,7 @@ function Chatbot() {
     try {
       const response = await api.post('/chat/', {
         message: userMessage.content,
-        history: messages.map((m) => ({
-          role: m.role === 'bot' ? 'assistant' : 'user',
-          content: m.content,
-        })),
+        history: messages.map((m) => ({ role: m.role === 'bot' ? 'assistant' : 'user', content: m.content })),
       });
 
       const botMessage = {
@@ -56,11 +84,11 @@ function Chatbot() {
 
       setMessages((prev) => [...prev, botMessage]);
     } catch (err) {
-      showError('Failed to get response. Please try again.');
+      showError('The assistant is currently offline. Please try again shortly.');
       const errorMessage = {
         id: Date.now() + 1,
         role: 'bot',
-        content: 'I apologize, but I am having trouble connecting. Please try again or call 1195 for immediate help.',
+        content: 'I am having trouble connecting right now. For immediate help, call 1195 or use the emergency button. ',
         timestamp: new Date().toISOString(),
       };
       setMessages((prev) => [...prev, errorMessage]);
@@ -69,134 +97,91 @@ function Chatbot() {
     }
   };
 
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSend();
-    }
+  const clearChat = () => {
+    const welcome = {
+      id: Date.now(),
+      role: 'bot',
+      content: 'Hello! I am AmakaziWatch AI Assistant. I can help you with legal rights, safety planning, or connect you to resources. How can I help you today?',
+      timestamp: new Date().toISOString(),
+    };
+    setMessages([welcome]);
   };
-
-  const quickReplies = [
-    { label: 'My Legal Rights', value: 'What are my rights if I experience abuse?' },
-    { label: 'Find Help', value: 'How do I find help near me?' },
-    { label: 'Safety Plan', value: 'Help me create a safety plan' },
-    { label: 'Report Abuse', value: 'How do I report abuse?' },
-  ];
 
   if (!isOpen) {
     return (
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-24 right-6 bg-[#FF6B35] text-white p-4 rounded-full shadow-2xl hover:bg-orange-600 transition z-50"
+        className="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-primary text-white shadow-[0_18px_45px_rgba(255,107,53,0.35)] transition hover:scale-105"
+        aria-label="Open AI assistant"
       >
-        <MessageCircle className="w-6 h-6" />
+        <MessageCircle className="h-6 w-6" />
       </button>
     );
   }
 
   return (
-    <div className="fixed bottom-24 right-6 z-50 w-96 max-w-full">
-      <div className={`bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden transition-all ${
-        isMinimized ? 'h-16' : 'h-[500px]'
-      }`}>
-        {/* Header */}
-        <div className="bg-[#FF6B35] px-4 py-3 flex items-center justify-between">
+    <div className="fixed bottom-6 right-4 z-50 w-[92vw] max-w-[380px] sm:right-6">
+      <motion.div
+        initial={{ opacity: 0, y: 24, scale: 0.96 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: 16, scale: 0.96 }}
+        className={`overflow-hidden rounded-[28px] border border-white/70 shadow-[0_25px_80px_rgba(15,23,42,0.25)] backdrop-blur-xl ${darkMode ? 'border-white/10 bg-slate-800/90' : 'border-slate-200/80 bg-white/90'}`}
+      >
+        <div className={`flex items-center justify-between px-4 py-3 ${darkMode ? 'bg-slate-900/80' : 'bg-primary/95'}`}>
           <div className="flex items-center gap-2 text-white">
-            <Bot className="w-5 h-5" />
-            <span className="font-semibold">AmakaziWatch AI Assistant</span>
-            <span className="text-xs bg-green-400 px-2 py-0.5 rounded-full">Online</span>
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white/20">
+              <Bot className="h-5 w-5" />
+            </div>
+            <div>
+              <p className="text-sm font-semibold">AmakaziWatch AI Assistant</p>
+              <div className="flex items-center gap-2 text-[11px] text-orange-100">
+                <span className="h-2 w-2 rounded-full bg-emerald-400" />
+                Online
+              </div>
+            </div>
           </div>
           <div className="flex items-center gap-1">
-            <button
-              onClick={() => setIsMinimized(!isMinimized)}
-              className="text-white hover:bg-orange-600 p-1 rounded transition"
-            >
-              {isMinimized ? <Maximize2 className="w-4 h-4" /> : <Minimize2 className="w-4 h-4" />}
+            <button onClick={clearChat} className="rounded-full p-1.5 text-white/90 transition hover:bg-white/10" aria-label="Clear chat">
+              <Sparkles className="h-4 w-4" />
             </button>
-            <button
-              onClick={() => setIsOpen(false)}
-              className="text-white hover:bg-orange-600 p-1 rounded transition"
-            >
-              <X className="w-4 h-4" />
+            <button onClick={() => setIsMinimized((value) => !value)} className="rounded-full p-1.5 text-white/90 transition hover:bg-white/10" aria-label="Minimize chat">
+              {isMinimized ? <Maximize2 className="h-4 w-4" /> : <Minimize2 className="h-4 w-4" />}
+            </button>
+            <button onClick={() => setIsOpen(false)} className="rounded-full p-1.5 text-white/90 transition hover:bg-white/10" aria-label="Close chat">
+              <X className="h-4 w-4" />
             </button>
           </div>
         </div>
 
-        {/* Messages */}
-        {!isMinimized && (
-          <>
-            <div className="flex-1 overflow-y-auto p-4 space-y-3 h-[340px]">
-              {messages.map((msg) => (
-                <div
-                  key={msg.id}
-                  className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
-                >
-                  <div
-                    className={`max-w-[80%] rounded-2xl px-4 py-2 ${
-                      msg.role === 'user'
-                        ? 'bg-[#FF6B35] text-white'
-                        : 'bg-gray-100 text-gray-800'
-                    }`}
-                  >
-                    <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
-                    <span className="text-[10px] opacity-70 block mt-1">
-                      {new Date(msg.timestamp).toLocaleTimeString()}
-                    </span>
+        <AnimatePresence initial={false}>
+          {!isMinimized && (
+            <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
+              <div className="flex h-[420px] flex-col">
+                <div className="flex-1 space-y-3 overflow-y-auto bg-[radial-gradient(circle_at_top_left,_rgba(255,107,53,0.12),_transparent_30%)] p-3 dark:bg-slate-900/40">
+                  {messages.map((message) => (
+                    <ChatMessage key={message.id} message={message} />
+                  ))}
+                  {isLoading && <TypingIndicator />}
+                  <div ref={messagesEndRef} />
+                </div>
+
+                <div className="border-t border-slate-200/70 bg-white/70 p-2 dark:border-white/10 dark:bg-slate-800/80">
+                  <QuickReplies replies={quickReplies} onSelect={handleSend} />
+                  <div className="px-2 pb-2 pt-1">
+                    <ChatInput
+                      value={input}
+                      onChange={(event) => setInput(event.target.value)}
+                      onSend={() => handleSend(input)}
+                      disabled={isLoading}
+                      placeholder="Ask about your rights, safety, or support..."
+                    />
                   </div>
                 </div>
-              ))}
-              {isLoading && (
-                <div className="flex justify-start">
-                  <div className="bg-gray-100 rounded-2xl px-4 py-2">
-                    <div className="flex gap-1">
-                      <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                      <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                      <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
-                    </div>
-                  </div>
-                </div>
-              )}
-              <div ref={messagesEndRef} />
-            </div>
-
-            {/* Quick Replies */}
-            <div className="px-4 py-2 border-t border-gray-100 flex flex-wrap gap-2">
-              {quickReplies.map((reply) => (
-                <button
-                  key={reply.label}
-                  onClick={() => {
-                    setInput(reply.value);
-                    setTimeout(() => handleSend(), 100);
-                  }}
-                  className="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded-full transition"
-                >
-                  {reply.label}
-                </button>
-              ))}
-            </div>
-
-            {/* Input */}
-            <div className="p-4 border-t border-gray-200 flex gap-2">
-              <input
-                type="text"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={handleKeyDown}
-                placeholder="Type your message..."
-                className="flex-1 border border-gray-300 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6B35] focus:border-transparent"
-                disabled={isLoading}
-              />
-              <button
-                onClick={handleSend}
-                disabled={isLoading || !input.trim()}
-                className="bg-[#FF6B35] text-white p-2 rounded-full hover:bg-orange-600 transition disabled:opacity-50"
-              >
-                <Send className="w-4 h-4" />
-              </button>
-            </div>
-          </>
-        )}
-      </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.div>
     </div>
   );
 }
