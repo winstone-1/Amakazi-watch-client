@@ -1,8 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Shield, Users, MapPin, Phone, ArrowRight, ExternalLink, Sun, Moon } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Shield, Users, Phone, ArrowRight, ExternalLink, Sun, Moon, Sparkles, Lock, HeartHandshake } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import LoadingSpinner from '../components/common/LoadingSpinner';
+import GlassCard from '../components/common/GlassCard';
+import SkeletonCard from '../components/common/SkeletonCard';
 
 function Landing() {
   const navigate = useNavigate();
@@ -11,97 +14,142 @@ function Landing() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setTimeout(() => setLoading(false), 800);
+    const timer = window.setTimeout(() => setLoading(false), 800);
+    return () => window.clearTimeout(timer);
   }, []);
 
   return (
     <div className={`min-h-screen ${darkMode ? 'dark' : ''}`}>
-      <div className="min-h-screen bg-gradient-to-br from-orange-50 to-white dark:from-dark dark:to-gray-900 transition-colors duration-300">
-        <div className="absolute top-4 right-4">
+      <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(255,107,53,0.16),_transparent_32%),linear-gradient(135deg,_#fff8ef_0%,_#fdf6ec_45%,_#ffffff_100%)] dark:bg-[radial-gradient(circle_at_top_left,_rgba(255,107,53,0.18),_transparent_32%),linear-gradient(135deg,_#1A2A3A_0%,_#16212e_100%)] transition-colors duration-300">
+        <div className="absolute top-4 right-4 z-20">
           <button
             onClick={toggleDarkMode}
-            className="p-2 rounded-lg bg-white dark:bg-secondary shadow-lg hover:shadow-xl transition"
+            className="rounded-full border border-white/70 bg-white/80 p-2.5 shadow-[0_10px_30px_-12px_rgba(15,23,42,0.4)] backdrop-blur-xl transition hover:scale-105 dark:border-white/10 dark:bg-slate-800/80"
           >
-            {darkMode ? <Sun className="w-6 h-6 text-yellow-400" /> : <Moon className="w-6 h-6 text-gray-600" />}
+            {darkMode ? <Sun className="h-6 w-6 text-yellow-400" /> : <Moon className="h-6 w-6 text-slate-600" />}
           </button>
         </div>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16">
-          <div className="text-center">
-            <div className="flex justify-center mb-6">
-              <Shield className="w-16 h-16 text-primary" />
-            </div>
-            <h1 className="text-5xl md:text-6xl font-bold text-secondary dark:text-white mb-4">
-              AmakaziWatch
-            </h1>
-            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto mb-8">
-              Kenya's first crowdsourced GBV awareness, reporting and prevention platform.
-            </p>
-            
-            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 max-w-lg mx-auto mb-8">
-              <div className="flex items-center justify-center gap-2 text-red-700 dark:text-red-400">
-                <Phone className="w-5 h-5" />
-                <span className="font-bold">Emergency:</span>
-                <span className="font-bold text-xl">1195</span>
-                <span className="text-sm">(toll-free)</span>
+        <div className="mx-auto flex min-h-screen max-w-7xl flex-col justify-center px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.45 }}
+            className="grid items-center gap-10 lg:grid-cols-[1.1fr_0.9fr]"
+          >
+            <div className="text-center lg:text-left">
+              <div className="mb-6 flex justify-center lg:justify-start">
+                <div className="rounded-2xl border border-orange-200/70 bg-white/70 p-3 shadow-lg backdrop-blur-xl dark:border-orange-400/20 dark:bg-slate-800/70">
+                  <Shield className="h-12 w-12 text-primary" />
+                </div>
+              </div>
+              <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-orange-200/70 bg-white/70 px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-primary shadow-sm backdrop-blur-xl dark:border-orange-400/20 dark:bg-slate-800/70">
+                <Sparkles className="h-3.5 w-3.5" />
+                24/7 Digital Safety Support
+              </div>
+              <h1 className="mb-4 text-4xl font-black tracking-tight text-secondary dark:text-white sm:text-5xl lg:text-6xl">
+                AmakaziWatch
+              </h1>
+              <p className="mx-auto max-w-2xl text-lg leading-8 text-slate-600 dark:text-slate-300 lg:mx-0">
+                A premium GBV awareness, reporting, and prevention platform designed for women in Kenya to access support, evidence, and safety tools with confidence.
+              </p>
+
+              <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.15, duration: 0.35 }}
+                className="mt-8 flex flex-wrap justify-center gap-3 lg:justify-start"
+              >
+                <button
+                  onClick={() => navigate('/reports')}
+                  className="flex items-center gap-2 rounded-full bg-primary px-6 py-3 font-semibold text-white shadow-[0_16px_35px_-18px_rgba(255,107,53,0.9)] transition hover:-translate-y-0.5 hover:bg-orange-600"
+                >
+                  <Shield className="h-5 w-5" />
+                  Report Now
+                  <ArrowRight className="h-4 w-4" />
+                </button>
+                <button
+                  onClick={() => navigate('/organisations')}
+                  className="flex items-center gap-2 rounded-full border border-slate-200 bg-white/80 px-6 py-3 font-semibold text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:border-primary/30 hover:text-primary dark:border-white/10 dark:bg-slate-800/70 dark:text-slate-200"
+                >
+                  <Users className="h-5 w-5" />
+                  Find Help
+                </button>
+              </motion.div>
+
+              <div className="mt-8 flex flex-wrap justify-center gap-4 text-sm text-slate-500 dark:text-slate-400 lg:justify-start">
+                <button onClick={() => navigate('/education')} className="flex items-center gap-1 transition hover:text-primary">
+                  Learn More <ExternalLink className="h-3.5 w-3.5" />
+                </button>
+                <button onClick={() => navigate('/scorecards')} className="flex items-center gap-1 transition hover:text-primary">
+                  View Scorecards <ExternalLink className="h-3.5 w-3.5" />
+                </button>
               </div>
             </div>
 
-            {loading ? (
-              <div className="flex justify-center py-8">
-                <LoadingSpinner />
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-2xl mx-auto mb-10">
-                <div className="bg-white dark:bg-secondary rounded-xl shadow-sm p-6 border border-gray-100 dark:border-gray-700">
-                  <div className="text-3xl font-bold text-primary">{stats.reports}+</div>
-                  <div className="text-gray-500 dark:text-gray-400 text-sm">Reports Filed</div>
+            <div className="space-y-4">
+              <GlassCard className="relative overflow-hidden p-5 sm:p-6">
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(255,107,53,0.18),_transparent_32%)]" />
+                <div className="relative">
+                  <div className="mb-4 flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-semibold uppercase tracking-[0.25em] text-primary">Emergency Helpline</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">Immediate support available</p>
+                    </div>
+                    <div className="rounded-full bg-red-500/10 p-3 text-red-500">
+                      <Phone className="h-5 w-5" />
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between rounded-2xl border border-red-200/70 bg-red-50/80 px-4 py-4 dark:border-red-400/20 dark:bg-red-950/30">
+                    <div>
+                      <p className="text-3xl font-black tracking-wide text-red-600">1195</p>
+                      <p className="text-sm text-slate-600 dark:text-slate-300">Toll-free national hotline</p>
+                    </div>
+                    <motion.button
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => window.alert('Emergency support is available. Please call 1195 immediately if you are in danger.')}
+                      className="rounded-full bg-red-500 px-4 py-2 text-sm font-semibold text-white shadow-[0_15px_30px_-16px_rgba(239,68,68,0.85)] transition hover:bg-red-600"
+                    >
+                      SOS
+                    </motion.button>
+                  </div>
+                  <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                    <div className="rounded-2xl border border-emerald-200/70 bg-emerald-50/80 p-4 dark:border-emerald-400/20 dark:bg-emerald-950/30">
+                      <div className="flex items-center gap-2 text-sm font-semibold text-emerald-700 dark:text-emerald-300">
+                        <Lock className="h-4 w-4" />
+                        Private & Secure
+                      </div>
+                      <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">Confidential reporting tools and encrypted support paths.</p>
+                    </div>
+                    <div className="rounded-2xl border border-sky-200/70 bg-sky-50/80 p-4 dark:border-sky-400/20 dark:bg-sky-950/30">
+                      <div className="flex items-center gap-2 text-sm font-semibold text-sky-700 dark:text-sky-300">
+                        <HeartHandshake className="h-4 w-4" />
+                        Guided help
+                      </div>
+                      <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">Connect to verified organisations and peer support.</p>
+                    </div>
+                  </div>
                 </div>
-                <div className="bg-white dark:bg-secondary rounded-xl shadow-sm p-6 border border-gray-100 dark:border-gray-700">
-                  <div className="text-3xl font-bold text-secondary dark:text-white">{stats.orgs}</div>
-                  <div className="text-gray-500 dark:text-gray-400 text-sm">Active Organizations</div>
-                </div>
-                <div className="bg-white dark:bg-secondary rounded-xl shadow-sm p-6 border border-gray-100 dark:border-gray-700">
-                  <div className="text-3xl font-bold text-accent">{stats.counties}</div>
-                  <div className="text-gray-500 dark:text-gray-400 text-sm">Counties Covered</div>
-                </div>
-              </div>
-            )}
+              </GlassCard>
 
-            <div className="flex flex-wrap justify-center gap-4">
-              <button 
-                onClick={() => navigate('/reports')}
-                className="bg-primary text-white px-8 py-3 rounded-full font-semibold hover:bg-orange-600 transition flex items-center gap-2"
-              >
-                <Shield className="w-5 h-5" />
-                Report Now
-                <ArrowRight className="w-4 h-4" />
-              </button>
-              <button 
-                onClick={() => navigate('/organisations')}
-                className="bg-secondary dark:bg-gray-700 text-white px-8 py-3 rounded-full font-semibold hover:bg-dark transition flex items-center gap-2"
-              >
-                <Users className="w-5 h-5" />
-                Find Help
-              </button>
-              <button 
-                onClick={() => alert('🚨 Emergency alert triggered! Call 1195 for immediate help.')}
-                className="bg-red-500 text-white px-8 py-3 rounded-full font-semibold hover:bg-red-600 transition animate-pulse flex items-center gap-2"
-              >
-                <Phone className="w-5 h-5" />
-                SOS Emergency
-              </button>
+              <div className="grid gap-4 sm:grid-cols-3">
+                {loading ? (
+                  Array.from({ length: 3 }).map((_, index) => <SkeletonCard key={index} className="min-h-[122px]" />)
+                ) : (
+                  [
+                    { label: 'Reports filed', value: `${stats.reports}+`, color: 'text-primary' },
+                    { label: 'Active organisations', value: stats.orgs, color: 'text-secondary dark:text-white' },
+                    { label: 'Counties covered', value: stats.counties, color: 'text-accent' },
+                  ].map((item) => (
+                    <GlassCard key={item.label} className="p-4 text-center">
+                      <p className={`text-2xl font-black ${item.color}`}>{item.value}</p>
+                      <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{item.label}</p>
+                    </GlassCard>
+                  ))
+                )}
+              </div>
             </div>
-
-            <div className="mt-8 flex flex-wrap justify-center gap-4 text-sm text-gray-500 dark:text-gray-400">
-              <button onClick={() => navigate('/education')} className="hover:text-primary flex items-center gap-1">
-                Learn More <ExternalLink className="w-3 h-3" />
-              </button>
-              <button onClick={() => navigate('/scorecards')} className="hover:text-primary flex items-center gap-1">
-                View Scorecards <ExternalLink className="w-3 h-3" />
-              </button>
-            </div>
-          </div>
+          </motion.div>
         </div>
       </div>
     </div>
