@@ -1,13 +1,13 @@
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import { 
   Shield, LogOut, Home, FileText, ShieldAlert, 
-  FolderLock, Users, Scale, Building2, BookOpen, BarChart3, Bell, Map,
+  FolderLock, Users, Scale, Building2, BookOpen, BarChart3, Bell, Map, CreditCard, UserCircle2,
   Moon, Sun, Menu, X
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import { useTheme } from '../../context/ThemeContext';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 function Layout() {
   const { logout, user } = useAuth();
@@ -16,6 +16,8 @@ function Layout() {
   const navigate = useNavigate();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const notificationsRef = useRef(null);
 
   const handleLogout = () => {
     logout();
@@ -27,6 +29,7 @@ function Layout() {
     { path: '/dashboard', icon: Home, label: 'Dashboard' },
     { path: '/reports', icon: FileText, label: 'Reports' },
     { path: '/heatmap', icon: Map, label: 'Heatmap' },
+    { path: '/subscriptions', icon: CreditCard, label: 'Subscriptions' },
     { path: '/safety', icon: ShieldAlert, label: 'Safety' },
     { path: '/vault', icon: FolderLock, label: 'Vault' },
     { path: '/peer-support', icon: Users, label: 'Peer Support' },
@@ -35,6 +38,34 @@ function Layout() {
     { path: '/education', icon: BookOpen, label: 'Education' },
     { path: '/scorecards', icon: BarChart3, label: 'Scorecards' },
   ];
+
+  const quickActions = [
+    { label: 'Report', path: '/reports', icon: FileText },
+    { label: 'Safety', path: '/safety', icon: ShieldAlert },
+    { label: 'Profile', path: '/profile', icon: UserCircle2 },
+  ];
+
+  const roleLabel = (user?.role || 'survivor').toString().toLowerCase();
+  const roleBadge = roleLabel.includes('counselor')
+    ? 'Counselor'
+    : roleLabel.includes('org')
+      ? 'Organisation'
+      : roleLabel.includes('county')
+        ? 'County'
+        : roleLabel.includes('admin')
+          ? 'Admin'
+          : 'Survivor';
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (notificationsRef.current && !notificationsRef.current.contains(event.target)) {
+        setShowNotifications(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   return (
     <div className={`min-h-screen ${darkMode ? 'dark' : ''}`}>
@@ -86,7 +117,25 @@ function Layout() {
             <div className="flex items-center gap-4">
               <h1 className="hidden text-xl font-semibold text-secondary dark:text-white md:block">{navItems.find((item) => location.pathname.startsWith(item.path))?.label || 'Dashboard'}</h1>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <div className="hidden items-center gap-2 md:flex">
+                {quickActions.map((action) => {
+                  const Icon = action.icon;
+                  const active = location.pathname === action.path;
+                  return (
+                    <Link
+                      key={action.path}
+                      to={action.path}
+                      className={`rounded-full px-3 py-2 text-sm font-semibold transition ${active ? 'bg-primary text-white shadow' : 'bg-white/70 text-slate-600 hover:bg-orange-50 hover:text-primary dark:bg-slate-800/70 dark:text-slate-300 dark:hover:bg-orange-900/20'}`}
+                    >
+                      <span className="flex items-center gap-2">
+                        <Icon className="h-4 w-4" />
+                        {action.label}
+                      </span>
+                    </Link>
+                  );
+                })}
+              </div>
               <button
                 onClick={toggleDarkMode}
                 className="rounded-xl p-2.5 transition hover:bg-slate-100 dark:hover:bg-slate-700"
@@ -94,13 +143,44 @@ function Layout() {
               >
                 {darkMode ? <Sun className="w-5 h-5 text-yellow-400" /> : <Moon className="w-5 h-5 text-slate-600" />}
               </button>
-              <div className="rounded-xl border border-slate-200/70 bg-white/70 p-2 text-slate-400 dark:border-white/10 dark:bg-slate-800/70">
-                <Bell className="w-5 h-5" />
+              <div className="relative" ref={notificationsRef}>
+                <button
+                  onClick={() => setShowNotifications((value) => !value)}
+                  className="rounded-xl border border-slate-200/70 bg-white/70 p-2 text-slate-400 transition hover:bg-slate-100 dark:border-white/10 dark:bg-slate-800/70 dark:hover:bg-slate-700"
+                  aria-label="Open notifications"
+                >
+                  <Bell className="w-5 h-5" />
+                  <span className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full bg-primary" />
+                </button>
+                {showNotifications && (
+                  <div className="absolute right-0 top-12 z-50 w-72 rounded-2xl border border-slate-200/70 bg-white/95 p-3 shadow-2xl backdrop-blur-xl dark:border-white/10 dark:bg-slate-800/95">
+                    <div className="mb-2 flex items-center justify-between">
+                      <p className="text-sm font-semibold text-secondary dark:text-white">Notifications</p>
+                      <span className="rounded-full bg-primary/10 px-2 py-1 text-xs font-semibold text-primary">3 new</span>
+                    </div>
+                    <div className="space-y-2">
+                      {[
+                        { title: 'Safety check-in due', detail: 'Your timer window ends in 10 minutes', time: 'Now' },
+                        { title: 'New resource added', detail: 'A new shelter was added near you', time: '1h ago' },
+                        { title: 'Legal bot reply', detail: 'A new response was posted for your question', time: 'Today' },
+                      ].map((item) => (
+                        <div key={item.title} className="rounded-xl border border-slate-200/70 bg-slate-50/80 p-3 dark:border-white/10 dark:bg-slate-900/40">
+                          <p className="text-sm font-semibold text-secondary dark:text-white">{item.title}</p>
+                          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{item.detail}</p>
+                          <p className="mt-1 text-xs text-slate-400">{item.time}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
               <div className="flex items-center gap-3">
                 <div className="hidden text-right sm:block">
                   <div className="text-sm font-medium text-secondary dark:text-white">{user?.username || 'User'}</div>
-                  <div className="text-xs text-slate-400">{user?.role || 'Survivor'}</div>
+                  <div className="flex items-center justify-end gap-2 text-xs text-slate-400">
+                    <span>{roleBadge}</span>
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                  </div>
                 </div>
                 <button
                   onClick={handleLogout}

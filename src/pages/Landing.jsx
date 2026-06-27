@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Shield, Users, Phone, ArrowRight, ExternalLink, Sun, Moon, Sparkles, Lock, HeartHandshake } from 'lucide-react';
+import { Shield, Users, Phone, ArrowRight, ExternalLink, Sun, Moon, Sparkles, Lock, HeartHandshake, Play, Pause } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import GlassCard from '../components/common/GlassCard';
@@ -12,6 +12,7 @@ function Landing() {
   const { darkMode, toggleDarkMode } = useTheme();
   const [stats, setStats] = useState({ reports: 1247, orgs: 89, counties: 47 });
   const [loading, setLoading] = useState(true);
+  const [videoPlaying, setVideoPlaying] = useState(true);
 
   useEffect(() => {
     const timer = window.setTimeout(() => setLoading(false), 800);
@@ -88,9 +89,37 @@ function Landing() {
             </div>
 
             <div className="space-y-4">
-              <GlassCard className="relative overflow-hidden p-5 sm:p-6">
+              <GlassCard className="relative overflow-hidden p-3 sm:p-4">
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(255,107,53,0.18),_transparent_32%)]" />
-                <div className="relative">
+                <div className="relative overflow-hidden rounded-[24px] border border-white/20 bg-slate-950/90">
+                  <video
+                    className="h-72 w-full object-cover sm:h-80"
+                    src="https://www.w3schools.com/html/mov_bbb.mp4"
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    onPlay={() => setVideoPlaying(true)}
+                    onPause={() => setVideoPlaying(false)}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-900/20 to-transparent" />
+                  <div className="absolute inset-x-0 top-0 flex justify-between p-4">
+                    <div className="rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-white backdrop-blur">
+                      Featured story
+                    </div>
+                    <button
+                      onClick={() => setVideoPlaying((value) => !value)}
+                      className="rounded-full border border-white/20 bg-white/10 p-2 text-white backdrop-blur transition hover:scale-105"
+                    >
+                      {videoPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+                    </button>
+                  </div>
+                  <div className="absolute bottom-0 left-0 right-0 p-5 text-white">
+                    <p className="text-sm font-semibold uppercase tracking-[0.24em] text-orange-200">Safe, supported, and heard</p>
+                    <p className="mt-1 text-lg font-semibold">Hear how AmakaziWatch helps women find support and report safely.</p>
+                  </div>
+                </div>
+                <div className="relative mt-4">
                   <div className="mb-4 flex items-center justify-between">
                     <div>
                       <p className="text-sm font-semibold uppercase tracking-[0.25em] text-primary">Emergency Helpline</p>

@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import { BellRing, ChevronRight, ShieldCheck, Sparkles, Activity, Clock3, FileText, AlertTriangle } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import GlassCard from '../components/common/GlassCard';
@@ -71,13 +72,13 @@ function Dashboard() {
             {quickActions.map((action) => {
               const Icon = action.icon;
               return (
-                <button key={action.title} className="rounded-2xl border border-slate-200/70 bg-white/70 p-4 text-left transition hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-lg dark:border-white/10 dark:bg-slate-800/70">
+                <Link key={action.title} to={action.path} className="rounded-2xl border border-slate-200/70 bg-white/70 p-4 text-left transition hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-lg dark:border-white/10 dark:bg-slate-800/70">
                   <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
                     <Icon className="h-5 w-5" />
                   </div>
                   <h3 className="font-semibold text-secondary dark:text-white">{action.title}</h3>
                   <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{action.description}</p>
-                </button>
+                </Link>
               );
             })}
           </div>
