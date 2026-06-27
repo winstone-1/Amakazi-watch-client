@@ -6,7 +6,7 @@ function Organisations() {
 
   const orgs = [
     { name: 'FIDA Kenya', type: 'Legal Aid', county: 'Nairobi', rating: 4.8 },
-    { name: 'Women's Rights Initiative', type: 'NGO', county: 'Kisumu', rating: 4.5 },
+    { name: 'Womens Rights Initiative', type: 'NGO', county: 'Kisumu', rating: 4.5 },
     { name: 'GBV Recovery Center', type: 'Shelter', county: 'Mombasa', rating: 4.7 },
   ];
 
