@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Mail, Lock, ArrowRight, Shield, Chrome } from 'lucide-react';
+import { Mail, Lock, ArrowRight, Shield, Chrome, Sun, Moon } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { useGoogleAuth } from '../context/GoogleAuthContext';

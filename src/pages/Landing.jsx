@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Shield, Users, MapPin, Phone, ArrowRight, ExternalLink, Moon, Sun } from 'lucide-react';
+import { Shield, Users, MapPin, Phone, ArrowRight, ExternalLink, Sun, Moon } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 
@@ -17,7 +17,6 @@ function Landing() {
   return (
     <div className={`min-h-screen ${darkMode ? 'dark' : ''}`}>
       <div className="min-h-screen bg-gradient-to-br from-orange-50 to-white dark:from-dark dark:to-gray-900 transition-colors duration-300">
-        {/* Dark Mode Toggle in Landing */}
         <div className="absolute top-4 right-4">
           <button
             onClick={toggleDarkMode}
