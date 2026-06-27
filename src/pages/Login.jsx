@@ -31,9 +31,18 @@ function Login() {
         password: password,
       });
       const { access, refresh, user } = response.data;
-      login(user, access, refresh);
+      
+      // Store user data
+      localStorage.setItem('token', access);
+      localStorage.setItem('refresh', refresh);
+      localStorage.setItem('user', JSON.stringify(user));
+      
+      // Update auth context
+      login(user, access);
       success('Welcome back!');
-      navigate(from, { replace: true });
+      
+      // Navigate to dashboard
+      navigate('/dashboard', { replace: true });
     } catch (err) {
       error('Invalid credentials. Please try again.');
       setIsLoading(false);

@@ -1,29 +1,9 @@
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useAuth } from '../../context/AuthContext';
 
 function ProtectedRoute() {
-  const [isLoading, setIsLoading] = useState(true);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const { isAuthenticated, isLoading } = useAuth();
   const location = useLocation();
-
-  useEffect(() => {
-    try {
-      const token = localStorage.getItem('token');
-      const userStr = localStorage.getItem('user');
-      
-      let user = null;
-      if (userStr && userStr !== 'undefined' && userStr !== 'null') {
-        user = JSON.parse(userStr);
-      }
-      
-      setIsAuthenticated(!!token && !!user);
-    } catch (error) {
-      console.error('Error checking auth:', error);
-      setIsAuthenticated(false);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []); // Only run once
 
   if (isLoading) {
     return (
@@ -36,7 +16,6 @@ function ProtectedRoute() {
     );
   }
 
-  // If not authenticated, redirect to login
   if (!isAuthenticated) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
