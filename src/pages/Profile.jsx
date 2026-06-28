@@ -1,95 +1,96 @@
-import { useMemo } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { User, Mail, Phone, MapPin, Shield, Lock, Languages, CalendarDays, Star, Building2, Users, BarChart3, KeyRound, Sparkles } from 'lucide-react';
+import { User, Mail, Phone, MapPin, Shield, Lock, Languages, CalendarDays, Star, Building2, Users, BarChart3, KeyRound, Sparkles, Save, X } from 'lucide-react';
 import GlassCard from '../components/common/GlassCard';
+import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
+import { api } from '../api/axios';
 
-const profileConfig = {
-  survivor: {
-    title: 'Survivor profile',
-    badge: 'Personal safety profile',
-    fields: [
-      { label: 'Username', value: 'testuser', icon: User },
-      { label: 'Email', value: 'test@amakaziwatch.com', icon: Mail },
-      { label: 'Phone', value: '+254 712 345 678', icon: Phone },
-      { label: 'County', value: 'Nairobi', icon: MapPin },
-    ],
-    panels: [
-      { title: 'Safety preferences', body: 'Quiet contact only, emergency phone on, preferred follow-up in the evening.' },
-      { title: 'Language preference', body: 'English and Kiswahili support', icon: Languages },
-      { title: '2FA security', body: 'Enabled for all sign-ins', icon: Lock },
-    ],
-  },
-  counselor: {
-    title: 'Counselor profile',
-    badge: 'Professional support profile',
-    fields: [
-      { label: 'Specialization', value: 'Trauma-informed counseling', icon: Shield },
-      { label: 'Experience', value: '8 years', icon: CalendarDays },
-      { label: 'Certifications', value: 'GBV response, CBT', icon: Shield },
-      { label: 'Availability', value: 'Mon–Fri, 8am–6pm', icon: CalendarDays },
-    ],
-    panels: [
-      { title: 'Session stats', body: '125 total sessions • 108 completed • 17 pending', icon: BarChart3 },
-      { title: 'Client ratings', body: '4.9/5 average from recent clients', icon: Star },
-    ],
-  },
-  org: {
-    title: 'Organisation profile',
-    badge: 'Team and resource profile',
-    fields: [
-      { label: 'Organisation', value: 'Safe Haven Kenya', icon: Building2 },
-      { label: 'Team members', value: '14 active staff', icon: Users },
-      { label: 'Resource inventory', value: '12 beds, 4 legal slots', icon: Building2 },
-      { label: 'Impact', value: '248 people helped this month', icon: BarChart3 },
-    ],
-    panels: [
-      { title: 'Volunteer hours', body: '184 hours logged this month', icon: Users },
-      { title: 'Team notes', body: 'New intake workflow is active for all referrals', icon: Shield },
-    ],
-  },
-  county: {
-    title: 'County official profile',
-    badge: 'County governance profile',
-    fields: [
-      { label: 'County', value: 'Nairobi', icon: MapPin },
-      { label: 'Performance', value: 'Top 3 response rate', icon: BarChart3 },
-      { label: 'Downloads', value: 'Analytics export enabled', icon: Shield },
-      { label: 'API key', value: 'Active • rotates monthly', icon: KeyRound },
-    ],
-    panels: [
-      { title: 'Report downloads', body: 'Weekly county summary available', icon: Shield },
-      { title: 'Compliance', body: 'All reporting standards up to date', icon: Shield },
-    ],
-  },
-  admin: {
-    title: 'Admin profile',
-    badge: 'Platform administration profile',
-    fields: [
-      { label: 'System role', value: 'Platform admin', icon: Shield },
-      { label: 'User management', value: 'Active oversight enabled', icon: Users },
-      { label: 'Moderation queue', value: '24 items awaiting review', icon: Shield },
-      { label: 'Audit access', value: 'Full logs available', icon: KeyRound },
-    ],
-    panels: [
-      { title: 'Content moderation', body: 'Community updates reviewed twice daily', icon: Shield },
-      { title: 'Audit logs', body: 'Recent security checks and admin activity tracked', icon: BarChart3 },
-    ],
-  },
+const roleConfig = {
+  survivor: { title: 'Survivor profile', badge: 'Personal safety profile' },
+  counselor: { title: 'Counselor profile', badge: 'Professional support profile' },
+  org_staff: { title: 'Organisation Staff profile', badge: 'Team and resource profile' },
+  county_official: { title: 'County official profile', badge: 'County governance profile' },
+  admin: { title: 'Admin profile', badge: 'Platform administration profile' },
 };
 
-function Profile() {
-  const location = useLocation();
-  const role = useMemo(() => {
-    const path = location.pathname;
-    if (path.includes('/profile/counselor')) return 'counselor';
-    if (path.includes('/profile/org')) return 'org';
-    if (path.includes('/profile/county')) return 'county';
-    if (path.includes('/profile/admin')) return 'admin';
-    return 'survivor';
-  }, [location.pathname]);
+const counties = [
+  'Nairobi', 'Mombasa', 'Kisumu', 'Nakuru', 'Eldoret', 'Naivasha', 'Kitale',
+  'Garissa', 'Malindi', 'Lamu', 'Machakos', 'Kiambu', 'Kajiado', 'Nyeri', 'Meru',
+  'Thika', 'Kakamega', 'Bungoma', 'Busia', 'Kisii', 'Migori', 'Homa Bay', 'Siaya',
+  'Kericho', 'Bomet', 'Narok', 'Kilifi', 'Kwale', 'Tana River', 'Lamu', 'Taita Taveta',
+  'Makueni', 'Machakos', 'Muranga', 'Kirinyaga', 'Nyandarua', 'Laikipia', 'Nandi', 'Uasin Gishu',
+  'Elgeyo Marakwet', 'West Pokot', 'Baringo', 'Samburu', 'Turkana', 'Trans Nzoia', 'Isiolo', 'Marsabit',
+  'Mandera', 'Wajir', 'Garissa'
+];
 
-  const config = profileConfig[role];
+function Profile() {
+  const navigate = useNavigate();
+  const { user, updateUser } = useAuth();
+  const { success, error } = useToast();
+  const [isEditing, setIsEditing] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    username: '',
+    email: '',
+    phone: '',
+    county: '',
+    bio: '',
+    role: 'survivor',
+  });
+
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        username: user.username || '',
+        email: user.email || '',
+        phone: user.phone || '',
+        county: user.county || '',
+        bio: user.bio || '',
+        role: user.role || 'survivor',
+      });
+    }
+  }, [user]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSave = async () => {
+    setLoading(true);
+    try {
+      const response = await api.patch('/profile/', formData);
+      updateUser(response.data);
+      success('Profile updated successfully!');
+      setIsEditing(false);
+      // Force dashboard reload to show new role view
+      window.location.reload();
+    } catch (err) {
+      console.error('Failed to update profile:', err);
+      error('Failed to update profile. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCancel = () => {
+    if (user) {
+      setFormData({
+        username: user.username || '',
+        email: user.email || '',
+        phone: user.phone || '',
+        county: user.county || '',
+        bio: user.bio || '',
+        role: user.role || 'survivor',
+      });
+    }
+    setIsEditing(false);
+  };
+
+  const role = user?.role || 'survivor';
+  const config = roleConfig[role] || roleConfig.survivor;
 
   return (
     <div className="space-y-6 transition-colors duration-300">
@@ -103,49 +104,200 @@ function Profile() {
             <h1 className="text-3xl font-black text-secondary dark:text-white">{config.title}</h1>
             <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">Manage the information and preferences that matter for your role.</p>
           </div>
-          <button className="rounded-full border border-slate-200/70 bg-white/70 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:scale-[1.02] dark:border-white/10 dark:bg-slate-800/70 dark:text-slate-200">
-            Edit profile
-          </button>
+          {!isEditing ? (
+            <button
+              onClick={() => setIsEditing(true)}
+              className="rounded-full border border-slate-200/70 bg-white/70 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:scale-[1.02] dark:border-white/10 dark:bg-slate-800/70 dark:text-slate-200"
+            >
+              Edit profile
+            </button>
+          ) : (
+            <div className="flex gap-2">
+              <button
+                onClick={handleCancel}
+                className="rounded-full border border-slate-200/70 bg-white/70 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:scale-[1.02] dark:border-white/10 dark:bg-slate-800/70 dark:text-slate-200"
+              >
+                <X className="h-4 w-4 inline mr-1" />
+                Cancel
+              </button>
+              <button
+                onClick={handleSave}
+                disabled={loading}
+                className="rounded-full bg-primary px-4 py-2 text-sm font-semibold text-white shadow-lg transition hover:bg-orange-600 disabled:opacity-50"
+              >
+                <Save className="h-4 w-4 inline mr-1" />
+                {loading ? 'Saving...' : 'Save'}
+              </button>
+            </div>
+          )}
         </div>
       </GlassCard>
 
       <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
         <GlassCard className="p-6">
-          <div className="grid gap-4 md:grid-cols-2">
-            {config.fields.map((field) => {
-              const Icon = field.icon;
-              return (
-                <div key={field.label} className="rounded-2xl border border-slate-200/70 bg-white/70 p-4 dark:border-white/10 dark:bg-slate-800/70">
-                  <div className="flex items-center gap-2 text-sm font-semibold text-slate-500 dark:text-slate-400">
-                    <Icon className="h-4 w-4 text-primary" />
-                    {field.label}
-                  </div>
-                  <p className="mt-2 text-base font-semibold text-secondary dark:text-white">{field.value}</p>
-                </div>
-              );
-            })}
+          <h2 className="mb-4 text-lg font-semibold text-secondary dark:text-white">Profile Information</h2>
+          <div className="space-y-4">
+            <div className="rounded-2xl border border-slate-200/70 bg-white/70 p-4 dark:border-white/10 dark:bg-slate-800/70">
+              <div className="flex items-center gap-2 text-sm font-semibold text-slate-500 dark:text-slate-400">
+                <User className="h-4 w-4 text-primary" />
+                Username
+              </div>
+              {isEditing ? (
+                <input
+                  type="text"
+                  name="username"
+                  value={formData.username}
+                  onChange={handleChange}
+                  className="mt-2 w-full rounded-xl border border-slate-200/70 bg-white/80 px-3 py-2 text-secondary outline-none focus:border-primary dark:border-white/10 dark:bg-slate-700/50 dark:text-white"
+                />
+              ) : (
+                <p className="mt-2 text-base font-semibold text-secondary dark:text-white">{user?.username || 'N/A'}</p>
+              )}
+            </div>
+
+            <div className="rounded-2xl border border-slate-200/70 bg-white/70 p-4 dark:border-white/10 dark:bg-slate-800/70">
+              <div className="flex items-center gap-2 text-sm font-semibold text-slate-500 dark:text-slate-400">
+                <Mail className="h-4 w-4 text-primary" />
+                Email
+              </div>
+              {isEditing ? (
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  className="mt-2 w-full rounded-xl border border-slate-200/70 bg-white/80 px-3 py-2 text-secondary outline-none focus:border-primary dark:border-white/10 dark:bg-slate-700/50 dark:text-white"
+                />
+              ) : (
+                <p className="mt-2 text-base font-semibold text-secondary dark:text-white">{user?.email || 'N/A'}</p>
+              )}
+            </div>
+
+            <div className="rounded-2xl border border-slate-200/70 bg-white/70 p-4 dark:border-white/10 dark:bg-slate-800/70">
+              <div className="flex items-center gap-2 text-sm font-semibold text-slate-500 dark:text-slate-400">
+                <Phone className="h-4 w-4 text-primary" />
+                Phone
+              </div>
+              {isEditing ? (
+                <input
+                  type="tel"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  className="mt-2 w-full rounded-xl border border-slate-200/70 bg-white/80 px-3 py-2 text-secondary outline-none focus:border-primary dark:border-white/10 dark:bg-slate-700/50 dark:text-white"
+                />
+              ) : (
+                <p className="mt-2 text-base font-semibold text-secondary dark:text-white">{user?.phone || 'N/A'}</p>
+              )}
+            </div>
+
+            <div className="rounded-2xl border border-slate-200/70 bg-white/70 p-4 dark:border-white/10 dark:bg-slate-800/70">
+              <div className="flex items-center gap-2 text-sm font-semibold text-slate-500 dark:text-slate-400">
+                <MapPin className="h-4 w-4 text-primary" />
+                County
+              </div>
+              {isEditing ? (
+                <select
+                  name="county"
+                  value={formData.county}
+                  onChange={handleChange}
+                  className="mt-2 w-full rounded-xl border border-slate-200/70 bg-white/80 px-3 py-2 text-secondary outline-none focus:border-primary dark:border-white/10 dark:bg-slate-700/50 dark:text-white"
+                >
+                  <option value="">Select county</option>
+                  {counties.map(county => (
+                    <option key={county} value={county}>{county}</option>
+                  ))}
+                </select>
+              ) : (
+                <p className="mt-2 text-base font-semibold text-secondary dark:text-white">{user?.county || 'N/A'}</p>
+              )}
+            </div>
+
+            <div className="rounded-2xl border border-slate-200/70 bg-white/70 p-4 dark:border-white/10 dark:bg-slate-800/70">
+              <div className="flex items-center gap-2 text-sm font-semibold text-slate-500 dark:text-slate-400">
+                <Shield className="h-4 w-4 text-primary" />
+                Role
+              </div>
+              {isEditing ? (
+                <select
+                  name="role"
+                  value={formData.role}
+                  onChange={handleChange}
+                  className="mt-2 w-full rounded-xl border border-slate-200/70 bg-white/80 px-3 py-2 text-secondary outline-none focus:border-primary dark:border-white/10 dark:bg-slate-700/50 dark:text-white"
+                >
+                  <option value="survivor">Survivor</option>
+                  <option value="counselor">Counselor</option>
+                  <option value="org_staff">Organization Staff</option>
+                  <option value="county_official">County Official</option>
+                  <option value="admin">Admin</option>
+                </select>
+              ) : (
+                <p className="mt-2 text-base font-semibold text-secondary dark:text-white capitalize">{user?.role || 'survivor'}</p>
+              )}
+            </div>
+
+            <div className="rounded-2xl border border-slate-200/70 bg-white/70 p-4 dark:border-white/10 dark:bg-slate-800/70">
+              <div className="flex items-center gap-2 text-sm font-semibold text-slate-500 dark:text-slate-400">
+                <Languages className="h-4 w-4 text-primary" />
+                Bio
+              </div>
+              {isEditing ? (
+                <textarea
+                  name="bio"
+                  value={formData.bio}
+                  onChange={handleChange}
+                  rows={3}
+                  className="mt-2 w-full rounded-xl border border-slate-200/70 bg-white/80 px-3 py-2 text-secondary outline-none focus:border-primary dark:border-white/10 dark:bg-slate-700/50 dark:text-white"
+                />
+              ) : (
+                <p className="mt-2 text-base font-semibold text-secondary dark:text-white">{user?.bio || 'No bio provided'}</p>
+              )}
+            </div>
           </div>
         </GlassCard>
 
         <div className="space-y-4">
-          {config.panels.map((panel, index) => {
-            const Icon = panel.icon || Shield;
-            return (
-              <motion.div key={panel.title} initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.05 }}>
-                <GlassCard className="p-5">
-                  <div className="flex items-center gap-3">
-                    <div className="rounded-2xl bg-primary/10 p-2 text-primary">
-                      <Icon className="h-5 w-5" />
-                    </div>
-                    <div>
-                      <h2 className="font-semibold text-secondary dark:text-white">{panel.title}</h2>
-                      <p className="text-sm text-slate-500 dark:text-slate-400">{panel.body}</p>
-                    </div>
-                  </div>
-                </GlassCard>
-              </motion.div>
-            );
-          })}
+          <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }}>
+            <GlassCard className="p-5">
+              <div className="flex items-center gap-3">
+                <div className="rounded-2xl bg-primary/10 p-2 text-primary">
+                  <Lock className="h-5 w-5" />
+                </div>
+                <div>
+                  <h2 className="font-semibold text-secondary dark:text-white">Security</h2>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">Your account is protected with secure authentication.</p>
+                </div>
+              </div>
+            </GlassCard>
+          </motion.div>
+
+          <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
+            <GlassCard className="p-5">
+              <div className="flex items-center gap-3">
+                <div className="rounded-2xl bg-emerald-500/10 p-2 text-emerald-600 dark:text-emerald-400">
+                  <Shield className="h-5 w-5" />
+                </div>
+                <div>
+                  <h2 className="font-semibold text-secondary dark:text-white">Privacy</h2>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">Your data is encrypted and only accessible by you.</p>
+                </div>
+              </div>
+            </GlassCard>
+          </motion.div>
+
+          <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+            <GlassCard className="p-5">
+              <div className="flex items-center gap-3">
+                <div className="rounded-2xl bg-sky-500/10 p-2 text-sky-600 dark:text-sky-400">
+                  <CalendarDays className="h-5 w-5" />
+                </div>
+                <div>
+                  <h2 className="font-semibold text-secondary dark:text-white">Account Status</h2>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">Active • Last login: {new Date().toLocaleDateString()}</p>
+                </div>
+              </div>
+            </GlassCard>
+          </motion.div>
         </div>
       </div>
     </div>

@@ -27,18 +27,24 @@ function Layout() {
   };
 
   const navItems = [
-    { path: '/dashboard', icon: Home, label: 'Dashboard' },
-    { path: '/reports', icon: FileText, label: 'Reports' },
-    { path: '/heatmap', icon: Map, label: 'Heatmap' },
-    { path: '/subscriptions', icon: CreditCard, label: 'Subscriptions' },
-    { path: '/safety', icon: ShieldAlert, label: 'Safety' },
-    { path: '/vault', icon: FolderLock, label: 'Vault' },
-    { path: '/peer-support', icon: Users, label: 'Peer Support' },
-    { path: '/legal-bot', icon: Scale, label: 'Legal Bot' },
-    { path: '/organisations', icon: Building2, label: 'Organisations' },
-    { path: '/education', icon: BookOpen, label: 'Education' },
-    { path: '/scorecards', icon: BarChart3, label: 'Scorecards' },
+    { path: '/dashboard', icon: Home, label: 'Dashboard', showFor: 'all' },
+    { path: '/reports', icon: FileText, label: 'Reports', showFor: 'all' },
+    { path: '/safety', icon: ShieldAlert, label: 'Safety', showFor: ['survivor'] },
+    { path: '/vault', icon: FolderLock, label: 'Vault', showFor: ['survivor'] },
+    { path: '/peer-support', icon: Users, label: 'Peer Support', showFor: ['survivor', 'counselor'] },
+    { path: '/legal-bot', icon: Scale, label: 'Legal Bot', showFor: 'all' },
+    { path: '/organisations', icon: Building2, label: 'Organisations', showFor: 'all' },
+    { path: '/education', icon: BookOpen, label: 'Education', showFor: 'all' },
+    { path: '/scorecards', icon: BarChart3, label: 'Scorecards', showFor: ['county_official', 'admin'] },
+    { path: '/heatmap', icon: Map, label: 'Heatmap', showFor: ['county_official', 'admin'] },
+    { path: '/subscriptions', icon: CreditCard, label: 'Subscriptions', showFor: 'all' },
   ];
+
+  const role = (user?.role || 'survivor').toString().toLowerCase();
+  const filteredNav = navItems.filter(item => 
+    item.showFor === 'all' || 
+    (Array.isArray(item.showFor) && item.showFor.includes(role))
+  );
 
   const quickActions = [
     { label: 'Report', path: '/reports', icon: FileText },
@@ -118,7 +124,7 @@ function Layout() {
         <div className="flex-1 flex flex-col min-h-screen">
           <header className="sticky top-0 z-30 flex items-center justify-between border-b border-white/70 bg-white/70 px-4 py-3 backdrop-blur-xl dark:border-white/10 dark:bg-slate-800/70 md:px-6">
             <div className="flex items-center gap-4">
-              <h1 className="hidden text-xl font-semibold text-secondary dark:text-white md:block">{navItems.find((item) => location.pathname.startsWith(item.path))?.label || 'Dashboard'}</h1>
+              <h1 className="hidden text-xl font-semibold text-secondary dark:text-white md:block">{filteredNav.find((item) => location.pathname.startsWith(item.path))?.label || 'Dashboard'}</h1>
             </div>
             <div className="flex items-center gap-2 sm:gap-3">
               <div className="hidden items-center gap-2 md:flex">

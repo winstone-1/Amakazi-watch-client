@@ -1,8 +1,16 @@
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 
-function ProtectedRoute() {
-  const { isAuthenticated, isLoading } = useAuth();
+const roleHierarchy = {
+  'survivor': 0,
+  'counselor': 1,
+  'org_staff': 2,
+  'county_official': 3,
+  'admin': 4
+};
+
+function ProtectedRoute({ requiredRole = 'survivor' }) {
+  const { isAuthenticated, isLoading, user } = useAuth();
   const location = useLocation();
 
   if (isLoading) {
@@ -18,6 +26,14 @@ function ProtectedRoute() {
 
   if (!isAuthenticated) {
     return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  const userRole = user?.role || 'survivor';
+  const userLevel = roleHierarchy[userRole] || 0;
+  const requiredLevel = roleHierarchy[requiredRole] || 0;
+
+  if (userLevel < requiredLevel) {
+    return <Navigate to="/dashboard" replace />;
   }
 
   return <Outlet />;

@@ -1,221 +1,221 @@
-import React, { useState } from 'react';
-import { Card, Button, Timeline, Tag, message } from 'antd';
-import { Shield, MessageSquare, BookOpen, Key, AlertTriangle, ChevronRight, CheckCircle2, RefreshCw } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import { useTranslation } from '../../context/LanguageContext';
-import { getGPSLocation } from '../../utils/helpers';
-import api from '../../api/axios';
+import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { ShieldAlert, FileText, HeartHandshake, Clock3, AlertTriangle, ArrowRight, Phone, Sparkles } from 'lucide-react';
+import GlassCard from '../common/GlassCard';
+import { getReports, getReportsStats } from '../../api/reports';
+import { triggerPanic } from '../../api/panic';
+import { useToast } from '../../context/ToastContext';
 
-export const SurvivorDashboard = () => {
-  const { t } = useTranslation();
-  const navigate = useNavigate();
+function SurvivorDashboard() {
+  const { success, error } = useToast();
+  const [loading, setLoading] = useState(true);
+  const [reports, setReports] = useState([]);
+  const [stats, setStats] = useState({ total: 0, pending: 0, resolved: 0 });
   const [sosLoading, setSosLoading] = useState(false);
 
-  const handleImmediateSOS = async () => {
+  useEffect(() => {
+    fetchDashboardData();
+  }, []);
+
+  const fetchDashboardData = async () => {
+    try {
+      const [reportsData, statsData] = await Promise.all([
+        getReports(),
+        getReportsStats()
+      ]);
+      setReports(reportsData.results || reportsData || []);
+      setStats(statsData || { total: 0, pending: 0, resolved: 0 });
+      setLoading(false);
+    } catch (err) {
+      console.error('Failed to fetch dashboard data:', err);
+      setLoading(false);
+    }
+  };
+
+  const handleSOS = async () => {
     setSosLoading(true);
     try {
-      let coords = { latitude: 0, longitude: 0 };
-      try {
-        coords = await getGPSLocation();
-      } catch (e) {
-        console.warn('Geolocation failed/denied, sending SOS alert without GPS');
-      }
-
-      await api.post('safety/timer/start/', {
-        duration_seconds: 0,
-        latitude: coords.latitude,
-        longitude: coords.longitude,
-        is_sos: true,
-      });
-
-      message.success('Emergency SOS Alert Sent Successfully! Responders are tracking your device.');
+      await triggerPanic({ latitude: 0, longitude: 0 });
+      success('Emergency SOS alert sent! Help is on the way.');
     } catch (err) {
-      message.error('Failed to trigger SOS. Please call 1195 directly.');
+      error('Failed to send SOS. Please call 1195 directly.');
     } finally {
       setSosLoading(false);
     }
   };
 
-  const activeReports = [
-    {
-      id: 'Case #1920',
-      type: 'Domestic Safety',
-      status: 'Reviewed & Active',
-      statusColor: 'success',
-      org: 'SafeHaven Kenya',
-    },
-    {
-      id: 'Case #1912',
-      type: 'Legal Aid Request',
-      status: 'Pending Assignment',
-      statusColor: 'warning',
-      org: 'Legal Aid Society',
-    }
+  const quickActions = [
+    { title: 'File a Report', description: 'Report an incident safely', icon: FileText, path: '/reports' },
+    { title: 'Safety Tools', description: 'Timer, risk check, escape plan', icon: ShieldAlert, path: '/safety' },
+    { title: 'Find Help', description: 'Locate support nearby', icon: HeartHandshake, path: '/organisations' },
+    { title: 'Peer Support', description: 'Connect with counselors', icon: Phone, path: '/peer-support' },
   ];
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          <p className="mt-4 text-slate-600 dark:text-slate-300">Loading dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-3xl font-extrabold text-brand-dark tracking-tight">
-          Your Safe Space Dashboard
-        </h1>
-        <p className="text-brand-muted text-sm mt-1">
-          Welcome back. You are in a secure environment.
-        </p>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Left Column (Emergency SOS + Quick Links) */}
-        <div className="lg:col-span-8 space-y-6">
-          {/* Emergency Assistance card */}
-          <Card className="glass-panel border-none shadow-glass rounded-2xl">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-              <div className="space-y-1">
-                <h3 className="text-lg font-bold text-brand-dark flex items-center gap-2">
-                  <AlertTriangle className="w-5 h-5 text-brand-primary" />
-                  Emergency Assistance
-                </h3>
-                <p className="text-xs text-brand-muted max-w-md">
-                  If you are in immediate danger, use the SOS button. This will alert your designated emergency contacts and local responders.
-                </p>
-              </div>
-              <Button
-                type="primary"
-                danger
-                loading={sosLoading}
-                onClick={handleImmediateSOS}
-                className="w-full sm:w-auto h-12 px-6 rounded-xl font-bold bg-brand-primary border-none shadow-lg text-white"
-              >
-                {t('activateSos') || 'Activate SOS'}
-              </Button>
+    <div className="space-y-6 transition-colors duration-300">
+      {/* Welcome Banner */}
+      <GlassCard className="p-6 sm:p-8">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-orange-200/70 bg-orange-50/80 px-3 py-1 text-sm font-semibold text-primary dark:border-orange-400/20 dark:bg-orange-950/30">
+              <Sparkles className="h-4 w-4" />
+              Welcome back
             </div>
-          </Card>
-
-          {/* Quick modules Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <Card
-              hoverable
-              onClick={() => navigate('/safety')}
-              className="glass-panel-light border-none text-center rounded-2xl py-2 cursor-pointer transition-transform hover:-translate-y-0.5"
-            >
-              <div className="w-10 h-10 rounded-xl bg-brand-success/15 text-brand-success flex items-center justify-center mx-auto mb-2">
-                <Shield className="w-5 h-5" />
-              </div>
-              <p className="font-bold text-brand-dark text-xs">{t('safety')}</p>
-            </Card>
-
-            <Card
-              hoverable
-              onClick={() => navigate('/peer-support')}
-              className="glass-panel-light border-none text-center rounded-2xl py-2 cursor-pointer transition-transform hover:-translate-y-0.5"
-            >
-              <div className="w-10 h-10 rounded-xl bg-blue-500/15 text-blue-500 flex items-center justify-center mx-auto mb-2">
-                <MessageSquare className="w-5 h-5" />
-              </div>
-              <p className="font-bold text-brand-dark text-xs">{t('peerSupport')}</p>
-            </Card>
-
-            <Card
-              hoverable
-              onClick={() => navigate('/legal-bot')}
-              className="glass-panel-light border-none text-center rounded-2xl py-2 cursor-pointer transition-transform hover:-translate-y-0.5"
-            >
-              <div className="w-10 h-10 rounded-xl bg-purple-500/15 text-purple-500 flex items-center justify-center mx-auto mb-2">
-                <MessageSquare className="w-5 h-5" />
-              </div>
-              <p className="font-bold text-brand-dark text-xs">{t('legalBot')}</p>
-            </Card>
-
-            <Card
-              hoverable
-              onClick={() => navigate('/education')}
-              className="glass-panel-light border-none text-center rounded-2xl py-2 cursor-pointer transition-transform hover:-translate-y-0.5"
-            >
-              <div className="w-10 h-10 rounded-xl bg-amber-500/15 text-amber-500 flex items-center justify-center mx-auto mb-2">
-                <BookOpen className="w-5 h-5" />
-              </div>
-              <p className="font-bold text-brand-dark text-xs">{t('browseResources')}</p>
-            </Card>
+            <h1 className="text-3xl font-black text-secondary dark:text-white">Your Safety Dashboard</h1>
+            <p className="mt-2 max-w-2xl text-sm text-slate-600 dark:text-slate-300">
+              Stay informed, take action quickly, and access trusted support resources from one protected space.
+            </p>
           </div>
-
-          {/* Timeline of Interactions */}
-          <Card
-            title={<span className="font-bold text-brand-dark text-base">{t('timelineInteractions')}</span>}
-            className="glass-panel border-none shadow-glass rounded-2xl"
+          <button
+            onClick={handleSOS}
+            disabled={sosLoading}
+            className="rounded-full border border-red-200/70 bg-red-50/80 px-6 py-3 text-sm font-semibold text-red-600 shadow-lg transition hover:bg-red-100 dark:border-red-400/20 dark:bg-red-950/30 dark:text-red-400 disabled:opacity-50"
           >
-            <Timeline
-              items={[
-                {
-                  color: 'green',
-                  children: (
-                    <div className="space-y-1">
-                      <p className="text-[10px] text-brand-muted">Today, 10:14 AM</p>
-                      <p className="font-semibold text-brand-dark text-xs">Report Case #1920 Verified by NGO Responder</p>
-                      <p className="text-xs text-brand-muted">Your report has been successfully reviewed by SafeHaven Kenya. They have assigned a caseworker to your profile.</p>
-                      <Button size="small" type="dashed" className="mt-1 text-xs">Chat with Responder</Button>
-                    </div>
-                  ),
-                },
-                {
-                  color: 'blue',
-                  children: (
-                    <div className="space-y-1">
-                      <p className="text-[10px] text-brand-muted">Yesterday, 3:30 PM</p>
-                      <p className="font-semibold text-brand-dark text-xs">Submitted Legal Aid Request</p>
-                      <p className="text-xs text-brand-muted">You initiated a request for free legal representation regarding Case #1912.</p>
-                    </div>
-                  ),
-                },
-                {
-                  color: 'gray',
-                  children: (
-                    <div className="space-y-1">
-                      <p className="text-[10px] text-brand-muted">Oct 24, 2025</p>
-                      <p className="font-semibold text-brand-dark text-xs">Vault Credentials Updated</p>
-                      <p className="text-xs text-brand-muted">Your secure encryption keys for the digital vault were updated successfully.</p>
-                    </div>
-                  ),
-                },
-              ]}
-            />
-          </Card>
+            <AlertTriangle className="h-4 w-4 inline mr-2" />
+            {sosLoading ? 'Sending...' : 'Emergency SOS'}
+          </button>
         </div>
+      </GlassCard>
 
-        {/* Right Column (Reports Status Tracking) */}
-        <div className="lg:col-span-4">
-          <Card
-            title={<span className="font-bold text-brand-dark text-base">{t('reportStatus')}</span>}
-            extra={<Button type="link" size="small" className="text-brand-primary p-0 font-bold" onClick={() => navigate('/reports')}>View All</Button>}
-            className="glass-panel border-none shadow-glass rounded-2xl h-full"
-          >
-            <div className="space-y-4">
-              {activeReports.map((report) => (
-                <div key={report.id} className="p-4 rounded-xl bg-white/60 border border-brand-peach/30 space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-brand-dark text-xs">{report.id}</span>
-                    <Tag color={report.statusColor}>{report.status}</Tag>
-                  </div>
-                  <div>
-                    <p className="text-xs font-semibold text-brand-dark">{report.type}</p>
-                    <p className="text-[10px] text-brand-muted mt-0.5">Assigned to: {report.org}</p>
-                  </div>
-                  <Button
-                    size="small"
-                    className="w-full flex items-center justify-center gap-1 text-[11px] text-brand-primary border-brand-primary/20 hover:border-brand-primary"
-                    onClick={() => navigate(`/reports/${report.id.replace('#', '')}`)}
-                  >
-                    View Details
-                    <ChevronRight className="w-3.5 h-3.5" />
-                  </Button>
-                </div>
-              ))}
-            </div>
-          </Card>
-        </div>
+      {/* Stats */}
+      <div className="grid gap-4 md:grid-cols-3">
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
+          <GlassCard className="p-5">
+            <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">Total Reports</p>
+            <p className="mt-2 text-3xl font-black text-primary">{stats.total}</p>
+            <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">All time</p>
+          </GlassCard>
+        </motion.div>
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+          <GlassCard className="p-5">
+            <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">Pending</p>
+            <p className="mt-2 text-3xl font-black text-accent">{stats.pending}</p>
+            <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">Awaiting action</p>
+          </GlassCard>
+        </motion.div>
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
+          <GlassCard className="p-5">
+            <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">Resolved</p>
+            <p className="mt-2 text-3xl font-black text-emerald-600 dark:text-emerald-400">{stats.resolved}</p>
+            <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">Completed cases</p>
+          </GlassCard>
+        </motion.div>
       </div>
+
+      <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
+        {/* Quick Actions */}
+        <GlassCard className="p-6">
+          <div className="mb-4">
+            <h2 className="text-xl font-bold text-secondary dark:text-white">Quick Actions</h2>
+            <p className="text-sm text-slate-500 dark:text-slate-400">Move from insight to action in a moment</p>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2">
+            {quickActions.map((action) => {
+              const Icon = action.icon;
+              return (
+                <Link key={action.title} to={action.path} className="rounded-2xl border border-slate-200/70 bg-white/70 p-4 text-left transition hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-lg dark:border-white/10 dark:bg-slate-800/70">
+                  <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                    <Icon className="h-5 w-5" />
+                  </div>
+                  <h3 className="font-semibold text-secondary dark:text-white">{action.title}</h3>
+                  <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{action.description}</p>
+                </Link>
+              );
+            })}
+          </div>
+        </GlassCard>
+
+        {/* Recent Reports */}
+        <GlassCard className="p-6">
+          <div className="mb-4 flex items-center justify-between">
+            <div>
+              <h2 className="text-xl font-bold text-secondary dark:text-white">Recent Reports</h2>
+              <p className="text-sm text-slate-500 dark:text-slate-400">Your latest reports at a glance</p>
+            </div>
+            <Link to="/reports" className="text-sm font-semibold text-primary hover:underline">
+              View All
+            </Link>
+          </div>
+          <div className="space-y-3">
+            {reports.slice(0, 3).map((report) => (
+              <div key={report.id} className="flex items-start gap-3 rounded-2xl border border-slate-200/70 bg-white/60 p-3 dark:border-white/10 dark:bg-slate-800/60">
+                <div className="mt-1 rounded-full bg-primary/10 p-2 text-primary">
+                  <FileText className="h-4 w-4" />
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="text-sm font-semibold text-secondary dark:text-white">Report #{report.id}</p>
+                    <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${
+                      report.status === 'pending' ? 'bg-amber-100 text-amber-700 dark:bg-amber-950/30 dark:text-amber-300' :
+                      report.status === 'resolved' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-300' :
+                      'bg-sky-100 text-sky-700 dark:bg-sky-950/30 dark:text-sky-300'
+                    }`}>
+                      {report.status || 'Pending'}
+                    </span>
+                  </div>
+                  <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{report.created_at || 'Recently'}</p>
+                </div>
+              </div>
+            ))}
+            {reports.length === 0 && (
+              <div className="text-center py-8 text-slate-500 dark:text-slate-400">
+                <FileText className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                <p className="text-sm">No reports yet</p>
+                <Link to="/reports" className="text-sm font-semibold text-primary hover:underline">
+                  File your first report
+                </Link>
+              </div>
+            )}
+          </div>
+        </GlassCard>
+      </div>
+
+      {/* Activity Feed */}
+      <GlassCard className="p-6">
+        <div className="mb-4 flex items-center gap-3">
+          <div className="rounded-full bg-primary/10 p-2 text-primary">
+            <Clock3 className="h-5 w-5" />
+          </div>
+          <div>
+            <h2 className="text-xl font-bold text-secondary dark:text-white">Recent Activity</h2>
+            <p className="text-sm text-slate-500 dark:text-slate-400">Your latest updates at a glance</p>
+          </div>
+        </div>
+        <div className="space-y-3">
+          {[
+            { title: 'New resource added', detail: 'Safe shelter directory refreshed for Nairobi', time: '10 min ago' },
+            { title: 'Safety timer started', detail: 'Check-in window set for 30 minutes', time: '1 hour ago' },
+            { title: 'Organization response', detail: 'Caseworker replied to your latest report', time: 'Today' },
+          ].map((item) => (
+            <div key={item.title} className="flex items-start gap-3 rounded-2xl border border-slate-200/70 bg-white/60 p-3 dark:border-white/10 dark:bg-slate-800/60">
+              <div className="mt-1 rounded-full bg-accent/10 p-2 text-accent">
+                <AlertTriangle className="h-4 w-4" />
+              </div>
+              <div className="flex-1">
+                <div className="flex items-center justify-between gap-2">
+                  <p className="text-sm font-semibold text-secondary dark:text-white">{item.title}</p>
+                  <span className="text-xs text-slate-400">{item.time}</span>
+                </div>
+                <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{item.detail}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </GlassCard>
     </div>
   );
-};
+}
 
 export default SurvivorDashboard;

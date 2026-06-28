@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Mail, Lock, User, Shield, ArrowRight, Chrome, Sun, Moon } from 'lucide-react';
+import { Mail, Lock, User, Shield, ArrowRight, Chrome, Sun, Moon, Users } from 'lucide-react';
 import { useToast } from '../context/ToastContext';
 import { useGoogleAuth } from '../context/GoogleAuthContext';
 import { useTheme } from '../context/ThemeContext';
@@ -8,7 +8,7 @@ import LoadingSpinner from '../components/common/LoadingSpinner';
 import api from '../api/axios';
 
 function Register() {
-  const [formData, setFormData] = useState({ username: '', email: '', password: '', confirmPassword: '' });
+  const [formData, setFormData] = useState({ username: '', email: '', password: '', confirmPassword: '', role: 'survivor' });
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { success, error } = useToast();
@@ -28,6 +28,7 @@ function Register() {
         username: formData.username,
         email: formData.email,
         password: formData.password,
+        role: formData.role,
       });
       success('Registration successful! Please login.');
       navigate('/login');
@@ -85,6 +86,27 @@ function Register() {
                 disabled={isLoading}
               />
             </div>
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Role</label>
+            <div className="relative">
+              <Users className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <select
+                value={formData.role}
+                onChange={(e) => setFormData({...formData, role: e.target.value})}
+                className="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-secondary dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-primary appearance-none"
+                required
+                disabled={isLoading}
+              >
+                <option value="survivor">Survivor</option>
+                <option value="counselor">Counselor</option>
+                <option value="org_staff">Organization Staff</option>
+                <option value="county_official">County Official</option>
+                <option value="admin">Admin</option>
+              </select>
+            </div>
+            <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">Select your role to access the appropriate dashboard</p>
           </div>
 
           <div className="mb-4">
