@@ -8,6 +8,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import { useTheme } from '../../context/ThemeContext';
 import { useEffect, useRef, useState } from 'react';
+import Footer from './Footer';
 
 function Layout() {
   const { logout, user } = useAuth();
@@ -73,6 +74,8 @@ function Layout() {
         <button
           onClick={() => setSidebarOpen(!sidebarOpen)}
           className="md:hidden fixed top-4 left-4 z-50 rounded-xl border border-white/70 bg-white/80 p-2.5 shadow-lg backdrop-blur-xl"
+          aria-label={sidebarOpen ? 'Close sidebar' : 'Open sidebar'}
+          aria-expanded={sidebarOpen}
         >
           {sidebarOpen ? <X className="w-6 h-6 text-secondary" /> : <Menu className="w-6 h-6 text-secondary" />}
         </button>
@@ -138,19 +141,21 @@ function Layout() {
               </div>
               <button
                 onClick={toggleDarkMode}
-                className="rounded-xl p-2.5 transition hover:bg-slate-100 dark:hover:bg-slate-700"
-                aria-label="Toggle dark mode"
+                className="rounded-xl p-2.5 transition hover:bg-slate-100 dark:hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-primary"
+                aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
               >
                 {darkMode ? <Sun className="w-5 h-5 text-yellow-400" /> : <Moon className="w-5 h-5 text-slate-600" />}
               </button>
               <div className="relative" ref={notificationsRef}>
                 <button
                   onClick={() => setShowNotifications((value) => !value)}
-                  className="rounded-xl border border-slate-200/70 bg-white/70 p-2 text-slate-400 transition hover:bg-slate-100 dark:border-white/10 dark:bg-slate-800/70 dark:hover:bg-slate-700"
+                  className="rounded-xl border border-slate-200/70 bg-white/70 p-2 text-slate-400 transition hover:bg-slate-100 dark:border-white/10 dark:bg-slate-800/70 dark:hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-primary"
                   aria-label="Open notifications"
+                  aria-expanded={showNotifications}
+                  aria-haspopup="true"
                 >
                   <Bell className="w-5 h-5" />
-                  <span className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full bg-primary" />
+                  <span className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full bg-primary" aria-label="3 new notifications" />
                 </button>
                 {showNotifications && (
                   <div className="absolute right-0 top-12 z-50 w-72 rounded-2xl border border-slate-200/70 bg-white/95 p-3 shadow-2xl backdrop-blur-xl dark:border-white/10 dark:bg-slate-800/95">
@@ -184,7 +189,8 @@ function Layout() {
                 </div>
                 <button
                   onClick={handleLogout}
-                  className="rounded-xl p-2 text-slate-400 transition hover:bg-red-50 hover:text-red-500"
+                  className="rounded-xl p-2 text-slate-400 transition hover:bg-red-50 hover:text-red-500 focus:outline-none focus:ring-2 focus:ring-red-500"
+                  aria-label="Log out"
                 >
                   <LogOut className="w-5 h-5" />
                 </button>
@@ -195,6 +201,7 @@ function Layout() {
           <main className="flex-1 p-4 md:p-6 transition-colors duration-300">
             <Outlet />
           </main>
+          <Footer />
         </div>
       </div>
     </div>

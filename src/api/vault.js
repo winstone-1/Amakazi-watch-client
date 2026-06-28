@@ -19,3 +19,10 @@ export const deleteDocument = async (id) => {
   const response = await api.delete(`vault/documents/${id}/`);
   return response.data;
 };
+
+export const downloadDocument = async (id) => {
+  const response = await api.get(`vault/documents/${id}/download/`, {
+    responseType: 'blob'
+  });
+  return response.data;
+};

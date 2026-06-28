@@ -33,3 +33,29 @@ export const enable2FA = async () => {
   const response = await api.post('auth/2fa/enable/');
   return response.data;
 };
+
+export const get2FASetup = async () => {
+  const response = await api.get('auth/2fa/setup/');
+  return response.data;
+};
+
+export const setup2FA = async (code) => {
+  const response = await api.post('auth/2fa/setup/', { code });
+  return response.data;
+};
+
+export const disable2FA = async () => {
+  const response = await api.post('auth/2fa/disable/');
+  return response.data;
+};
+
+export const refreshToken = async (refresh) => {
+  const response = await api.post('auth/token/refresh/', { refresh });
+  return response.data;
+};
+
+export const confirmResetPassword = async (data) => {
+  // data: { uid, token, new_password }
+  const response = await api.post('auth/password-reset/confirm/', data);
+  return response.data;
+};

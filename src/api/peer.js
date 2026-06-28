@@ -19,3 +19,8 @@ export const endPeerSession = async (sessionId) => {
   const response = await api.post(`peer/sessions/${sessionId}/end/`);
   return response.data;
 };
+
+export const getPeerSessions = async () => {
+  const response = await api.get('peer/sessions/');
+  return response.data;
+};

@@ -12,6 +12,9 @@ import Chatbot from './components/chat/Chatbot';
 
 // Pages
 import Landing from './pages/Landing';
+import About from './pages/About';
+import HowItWorks from './pages/HowItWorks';
+import GetHelp from './pages/GetHelp';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import ResetPassword from './pages/ResetPassword';
@@ -67,6 +70,9 @@ function App() {
                   <Chatbot />
                   <Routes>
                     <Route path="/" element={<Landing />} />
+                    <Route path="/about" element={<About />} />
+                    <Route path="/how-it-works" element={<HowItWorks />} />
+                    <Route path="/get-help" element={<GetHelp />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />
                     <Route path="/reset-password" element={<ResetPassword />} />

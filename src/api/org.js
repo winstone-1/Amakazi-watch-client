@@ -61,3 +61,28 @@ export const addOrganisationReview = async (id, review) => {
   const response = await api.post(`organisations/${id}/reviews/`, review);
   return response.data;
 };
+
+export const getOrganisationReviews = async (id) => {
+  const response = await api.get(`organisations/${id}/reviews/`);
+  return response.data;
+};
+
+export const getOrganisationsByCounty = async (county) => {
+  const response = await api.get('organisations/', { params: { county } });
+  return response.data;
+};
+
+export const registerVolunteer = async (data) => {
+  const response = await api.post('org/volunteers/', data);
+  return response.data;
+};
+
+export const matchCase = async (data) => {
+  const response = await api.post('org/case-matching/', data);
+  return response.data;
+};
+
+export const getResourcesByCounty = async (county) => {
+  const response = await api.get('org/inventory/county/', { params: { county } });
+  return response.data;
+};

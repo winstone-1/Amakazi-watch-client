@@ -6,6 +6,7 @@ import { useTheme } from '../context/ThemeContext';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import GlassCard from '../components/common/GlassCard';
 import SkeletonCard from '../components/common/SkeletonCard';
+import Footer from '../components/common/Footer';
 
 function Landing() {
   const navigate = useNavigate();
@@ -79,6 +80,15 @@ function Landing() {
               </motion.div>
 
               <div className="mt-8 flex flex-wrap justify-center gap-4 text-sm text-slate-500 dark:text-slate-400 lg:justify-start">
+                <button onClick={() => navigate('/about')} className="flex items-center gap-1 transition hover:text-primary">
+                  About Us <ExternalLink className="h-3.5 w-3.5" />
+                </button>
+                <button onClick={() => navigate('/how-it-works')} className="flex items-center gap-1 transition hover:text-primary">
+                  How It Works <ExternalLink className="h-3.5 w-3.5" />
+                </button>
+                <button onClick={() => navigate('/get-help')} className="flex items-center gap-1 transition hover:text-primary">
+                  Get Help <ExternalLink className="h-3.5 w-3.5" />
+                </button>
                 <button onClick={() => navigate('/education')} className="flex items-center gap-1 transition hover:text-primary">
                   Learn More <ExternalLink className="h-3.5 w-3.5" />
                 </button>
@@ -180,6 +190,7 @@ function Landing() {
             </div>
           </motion.div>
         </div>
+        <Footer />
       </div>
     </div>
   );

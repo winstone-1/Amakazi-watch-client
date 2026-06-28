@@ -7,4 +7,8 @@ export * from './legal';
 export * from './org';
 export * from './content';
 export * from './admin';
+export * from './intelligence';
+export * from './notifications';
+export * from './privacy';
+export * from './panic';
 export { default as api } from './axios';

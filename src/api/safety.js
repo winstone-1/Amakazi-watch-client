@@ -32,3 +32,29 @@ export const getEscapePlan = async (answers) => {
   const response = await api.post('safety/escape-plan/', { answers });
   return response.data;
 };
+
+export const checkInTimer = async (safeWord) => {
+  const response = await api.post('safety/timer/check-in/', { safe_word: safeWord });
+  return response.data;
+};
+
+export const getActiveTimer = async () => {
+  const response = await api.get('safety/timer/');
+  return response.data;
+};
+
+export const triggerSafeWordAlert = async () => {
+  const response = await api.post('safety/safe-word/trigger/');
+  return response.data;
+};
+
+export const emergencyExit = async () => {
+  const response = await api.post('safety/emergency-exit/');
+  return response.data;
+};
+
+export const scheduleFakeCall = async (data) => {
+  // data: { scheduled_time, phone_number }
+  const response = await api.post('safety/schedule-call/', data);
+  return response.data;
+};

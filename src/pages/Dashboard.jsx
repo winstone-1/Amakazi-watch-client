@@ -1,29 +1,124 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { BellRing, ChevronRight, ShieldCheck, Sparkles, Activity, Clock3, FileText, AlertTriangle } from 'lucide-react';
+import { BellRing, ShieldCheck, Sparkles, Activity, Clock3, FileText, AlertTriangle, Users, Building2, BarChart3, HeartHandshake, Scale } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
+import { useAuth } from '../context/AuthContext';
 import GlassCard from '../components/common/GlassCard';
 
 function Dashboard() {
   const { darkMode } = useTheme();
+  const { user } = useAuth();
+  
+  const role = (user?.role || 'survivor').toString().toLowerCase();
+  const roleLabel = role.includes('counselor')
+    ? 'Counselor'
+    : role.includes('org')
+      ? 'Organisation Staff'
+      : role.includes('county')
+        ? 'County Official'
+        : role.includes('admin')
+          ? 'Administrator'
+          : 'Survivor';
 
-  const stats = [
-    { label: 'Reports', value: '1,247', helper: '+18% this month', tone: 'text-primary' },
-    { label: 'Active cases', value: '89', helper: '12 need follow-up', tone: 'text-accent' },
-    { label: 'Response rate', value: '94%', helper: 'Within 2 hours', tone: 'text-secondary dark:text-white' },
-  ];
+  const dashboardConfigs = {
+    survivor: {
+      title: 'Your safety dashboard',
+      subtitle: 'Stay informed, take action quickly, and access trusted support resources.',
+      stats: [
+        { label: 'Reports', value: '1,247', helper: '+18% this month', tone: 'text-primary' },
+        { label: 'Active cases', value: '89', helper: '12 need follow-up', tone: 'text-accent' },
+        { label: 'Response rate', value: '94%', helper: 'Within 2 hours', tone: 'text-secondary dark:text-white' },
+      ],
+      quickActions: [
+        { title: 'File a report', description: 'Capture an incident safely', icon: FileText, path: '/reports' },
+        { title: 'Access safety tools', description: 'Timer, risk check, escape plan', icon: ShieldCheck, path: '/safety' },
+        { title: 'Find help', description: 'Locate trusted support nearby', icon: HeartHandshake, path: '/organisations' },
+      ],
+      timeline: [
+        { title: 'New resource added', detail: 'Safe shelter directory refreshed for Nairobi', time: '10 min ago' },
+        { title: 'Safety timer started', detail: 'Check-in window set for 30 minutes', time: '1 hour ago' },
+        { title: 'Organization response', detail: 'Caseworker replied to your latest report', time: 'Today' },
+      ],
+    },
+    counselor: {
+      title: 'Counselor dashboard',
+      subtitle: 'Manage sessions and provide support to those in need.',
+      stats: [
+        { label: 'Active sessions', value: '8', helper: '2 ending soon', tone: 'text-primary' },
+        { label: 'Pending requests', value: '3', helper: 'Awaiting response', tone: 'text-accent' },
+        { label: 'Availability', value: 'Online', helper: 'Until 6 PM', tone: 'text-emerald-600' },
+      ],
+      quickActions: [
+        { title: 'View sessions', description: 'Manage active peer support sessions', icon: Users, path: '/peer-support' },
+        { title: 'Check requests', description: 'Review new support requests', icon: BellRing, path: '/notifications' },
+        { title: 'Update availability', description: 'Set your schedule and status', icon: Clock3, path: '/profile' },
+      ],
+      timeline: [
+        { title: 'New session request', detail: 'User #2847 needs immediate support', time: '5 min ago' },
+        { title: 'Session ended', detail: 'Completed session with user #1923', time: '2 hours ago' },
+        { title: 'Resource shared', detail: 'Sent legal guide to user #2847', time: 'Today' },
+      ],
+    },
+    org: {
+      title: 'Organisation dashboard',
+      subtitle: 'Track resources, referrals, and community impact.',
+      stats: [
+        { label: 'Beds available', value: '12', helper: 'Of 20 total', tone: 'text-primary' },
+        { label: 'Pending referrals', value: '9', helper: 'Awaiting assignment', tone: 'text-accent' },
+        { label: 'Volunteers', value: '24', helper: '6 on shift today', tone: 'text-secondary dark:text-white' },
+      ],
+      quickActions: [
+        { title: 'Update inventory', description: 'Manage shelter and resource availability', icon: Building2, path: '/org/inventory' },
+        { title: 'View referrals', description: 'Review and assign incoming cases', icon: Users, path: '/org/case-matching' },
+        { title: 'Manage volunteers', description: 'Schedule and coordinate team members', icon: Users, path: '/org/volunteers' },
+      ],
+      timeline: [
+        { title: 'New referral received', detail: 'Case #4521 from Nairobi County', time: '15 min ago' },
+        { title: 'Inventory updated', detail: '3 beds marked as available', time: '1 hour ago' },
+        { title: 'Volunteer check-in', detail: '5 volunteers confirmed for shift', time: 'Today' },
+      ],
+    },
+    county: {
+      title: 'County official dashboard',
+      subtitle: 'Monitor county-level response and reporting health.',
+      stats: [
+        { label: 'County rank', value: '#2', helper: 'Nationally', tone: 'text-primary' },
+        { label: 'Reports this month', value: '143', helper: '+12% vs last month', tone: 'text-accent' },
+        { label: 'Response time', value: '1.8 hrs', helper: 'Average', tone: 'text-secondary dark:text-white' },
+      ],
+      quickActions: [
+        { title: 'View scorecard', description: 'Detailed county performance metrics', icon: BarChart3, path: '/scorecards' },
+        { title: 'View heatmap', description: 'Geographic distribution of incidents', icon: Activity, path: '/heatmap' },
+        { title: 'View reports', description: 'Review all county reports', icon: FileText, path: '/reports' },
+      ],
+      timeline: [
+        { title: 'Scorecard updated', detail: 'Monthly metrics refreshed', time: '1 hour ago' },
+        { title: 'New report submitted', detail: 'Case #8921 from Westlands', time: '3 hours ago' },
+        { title: 'Trend analysis', description: 'GBV incidents down 8% this quarter', time: 'Today' },
+      ],
+    },
+    admin: {
+      title: 'Admin dashboard',
+      subtitle: 'System oversight, moderation, and platform health.',
+      stats: [
+        { label: 'Total users', value: '2,840', helper: '+45 this week', tone: 'text-primary' },
+        { label: 'Pending reviews', value: '24', helper: 'Organisations to verify', tone: 'text-accent' },
+        { label: 'System health', value: '99.9%', helper: 'All systems operational', tone: 'text-emerald-600' },
+      ],
+      quickActions: [
+        { title: 'Manage users', description: 'View and manage user accounts', icon: Users, path: '/admin' },
+        { title: 'Review orgs', description: 'Verify and moderate organizations', icon: Building2, path: '/admin' },
+        { title: 'View reports', description: 'System-wide report moderation', icon: FileText, path: '/admin' },
+      ],
+      timeline: [
+        { title: 'New org registration', detail: 'Safe Haven Kenya pending verification', time: '20 min ago' },
+        { title: 'User flagged', description: 'Account #1923 requires review', time: '1 hour ago' },
+        { title: 'System backup', description: 'Daily backup completed successfully', time: 'Today' },
+      ],
+    },
+  };
 
-  const quickActions = [
-    { title: 'File a report', description: 'Capture an incident safely', icon: FileText, path: '/reports' },
-    { title: 'Access safety tools', description: 'Timer, risk check, escape plan', icon: ShieldCheck, path: '/safety' },
-    { title: 'Review activity', description: 'See recent updates and alerts', icon: Activity, path: '/scorecards' },
-  ];
-
-  const timeline = [
-    { title: 'New resource added', detail: 'Safe shelter directory refreshed for Nairobi', time: '10 min ago' },
-    { title: 'Safety timer started', detail: 'Check-in window set for 30 minutes', time: '1 hour ago' },
-    { title: 'Organization response', detail: 'Caseworker replied to your latest report', time: 'Today' },
-  ];
+  const config = dashboardConfigs[role] || dashboardConfigs.survivor;
 
   return (
     <div className="space-y-6 transition-colors duration-300">
@@ -34,19 +129,17 @@ function Dashboard() {
               <Sparkles className="h-4 w-4" />
               Welcome back
             </div>
-            <h1 className="text-3xl font-black text-secondary dark:text-white">Your safety dashboard</h1>
-            <p className="mt-2 max-w-2xl text-sm text-slate-600 dark:text-slate-300">
-              Stay informed, take action quickly, and access trusted support resources from one protected space.
-            </p>
+            <h1 className="text-3xl font-black text-secondary dark:text-white">{config.title}</h1>
+            <p className="mt-2 max-w-2xl text-sm text-slate-600 dark:text-slate-300">{config.subtitle}</p>
           </div>
           <div className="rounded-2xl border border-emerald-200/70 bg-emerald-50/80 px-4 py-3 text-sm font-semibold text-emerald-700 dark:border-emerald-400/20 dark:bg-emerald-950/30 dark:text-emerald-300">
-            Role badge: Survivor Support
+            Role: {roleLabel}
           </div>
         </div>
       </GlassCard>
 
       <div className="grid gap-4 md:grid-cols-3">
-        {stats.map((stat, index) => (
+        {config.stats.map((stat, index) => (
           <motion.div key={stat.label} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.05 }}>
             <GlassCard className="p-5">
               <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">{stat.label}</p>
@@ -62,14 +155,14 @@ function Dashboard() {
           <div className="mb-4 flex items-center justify-between">
             <div>
               <h2 className="text-xl font-bold text-secondary dark:text-white">Quick actions</h2>
-              <p className="text-sm text-slate-500 dark:text-slate-400">Move from insight to support in a moment</p>
+              <p className="text-sm text-slate-500 dark:text-slate-400">Move from insight to action in a moment</p>
             </div>
             <button className="rounded-full border border-slate-200 bg-white/70 p-2 text-slate-500 transition hover:text-primary dark:border-white/10 dark:bg-slate-800/70">
               <BellRing className="h-4 w-4" />
             </button>
           </div>
           <div className="grid gap-3 md:grid-cols-3">
-            {quickActions.map((action) => {
+            {config.quickActions.map((action) => {
               const Icon = action.icon;
               return (
                 <Link key={action.title} to={action.path} className="rounded-2xl border border-slate-200/70 bg-white/70 p-4 text-left transition hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-lg dark:border-white/10 dark:bg-slate-800/70">
@@ -95,7 +188,7 @@ function Dashboard() {
             </div>
           </div>
           <div className="space-y-3">
-            {timeline.map((item) => (
+            {config.timeline.map((item) => (
               <div key={item.title} className="flex items-start gap-3 rounded-2xl border border-slate-200/70 bg-white/60 p-3 dark:border-white/10 dark:bg-slate-800/60">
                 <div className="mt-1 rounded-full bg-accent/10 p-2 text-accent">
                   <AlertTriangle className="h-4 w-4" />
