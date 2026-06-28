@@ -8,7 +8,7 @@ import { getOrgHotspots } from '../../api/org';
 import { useToast } from '../../context/ToastContext';
 
 function CountyOfficialDashboard() {
-  const { success, error } = useToast();
+  const { error } = useToast();
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({ total: 0, pending: 0, response_time: 0 });
   const [hotspots, setHotspots] = useState([]);

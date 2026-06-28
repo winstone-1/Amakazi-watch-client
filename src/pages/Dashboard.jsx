@@ -6,25 +6,33 @@ import CountyOfficialDashboard from '../components/dashboard/CountyOfficialDashb
 import AdminDashboard from '../components/dashboard/AdminDashboard';
 
 function Dashboard() {
-  const { user } = useAuth();
+  const { user, isLoading } = useAuth();
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" />
+      </div>
+    );
+  }
+
+  // AuthContext.normaliseUser already lowercases/trims the role on login/load
   const role = user?.role || 'survivor';
 
-  const renderDashboard = () => {
-    switch (role) {
-      case 'admin':
-        return <AdminDashboard />;
-      case 'counselor':
-        return <CounselorDashboard />;
-      case 'org_staff':
-        return <OrgStaffDashboard />;
-      case 'county_official':
-        return <CountyOfficialDashboard />;
-      default:
-        return <SurvivorDashboard />;
-    }
-  };
+  console.log('[Dashboard] user:', user, '| role:', role);
 
-  return <div className="transition-colors duration-300">{renderDashboard()}</div>;
+  switch (role) {
+    case 'admin':
+      return <AdminDashboard />;
+    case 'counselor':
+      return <CounselorDashboard />;
+    case 'org_staff':
+      return <OrgStaffDashboard />;
+    case 'county_official':
+      return <CountyOfficialDashboard />;
+    default:
+      return <SurvivorDashboard />;
+  }
 }
 
 export default Dashboard;

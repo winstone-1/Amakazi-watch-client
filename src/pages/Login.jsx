@@ -24,35 +24,65 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    
+
     try {
-      const response = await api.post('/auth/token/', {
+      // Step 1: get tokens
+      const tokenRes = await api.post('/auth/token/', {
         username: email,
-        password: password,
+        password,
       });
-      const { access, refresh, user } = response.data;
-      
-      // Store user data
+
+      const { access, refresh } = tokenRes.data;
+
+      // Immediately configure the axios header so the profile call is authenticated
+      api.defaults.headers.common['Authorization'] = `Bearer ${access}`;
       localStorage.setItem('token', access);
-      localStorage.setItem('refresh', refresh);
-      localStorage.setItem('user', JSON.stringify(user));
-      
-      // Update auth context
-      login(user, access);
+      if (refresh) localStorage.setItem('refresh', refresh);
+
+      // Step 2: resolve user data
+      // Prefer user object nested in token response; fall back to /profile/ endpoint
+      let userData = tokenRes.data.user || null;
+
+      if (!userData || !userData.role) {
+        // Backend doesn't return user in token response — fetch profile
+        try {
+          const profileRes = await api.get('/profile/');
+          userData = profileRes.data;
+          console.log('[Login] fetched profile:', userData);
+        } catch (profileErr) {
+          console.warn('[Login] profile fetch failed:', profileErr.message);
+          // Last resort: keep whatever partial data we have
+          userData = userData || { username: email };
+        }
+      }
+
+      console.log('[Login] final userData before storing:', userData);
+      console.log('[Login] role:', userData?.role);
+
+      // Step 3: persist and update context
+      // login() in AuthContext normalises the role, so just pass through
+      login(userData, access, refresh);
+
       success('Welcome back!');
-      
-      // Navigate to dashboard
-      navigate('/dashboard', { replace: true });
+      navigate(from, { replace: true });
     } catch (err) {
-      error('Invalid credentials. Please try again.');
+      console.error('[Login] error:', err);
+      error(
+        err?.response?.data?.detail ||
+        err?.response?.data?.non_field_errors?.[0] ||
+        'Invalid credentials. Please try again.'
+      );
+    } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className={`min-h-screen flex items-center justify-center p-4 transition-colors duration-300 ${
-      darkMode ? 'bg-dark' : 'bg-gradient-to-br from-orange-50 to-white'
-    }`}>
+    <div
+      className={`min-h-screen flex items-center justify-center p-4 transition-colors duration-300 ${
+        darkMode ? 'bg-dark' : 'bg-gradient-to-br from-orange-50 to-white'
+      }`}
+    >
       <div className="bg-white dark:bg-secondary rounded-2xl shadow-xl p-8 max-w-md w-full">
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center gap-2">
@@ -62,35 +92,58 @@ function Login() {
             onClick={toggleDarkMode}
             className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition"
           >
-            {darkMode ? <Sun className="w-5 h-5 text-yellow-400" /> : <Moon className="w-5 h-5 text-gray-600" />}
+            {darkMode ? (
+              <Sun className="w-5 h-5 text-yellow-400" />
+            ) : (
+              <Moon className="w-5 h-5 text-gray-600" />
+            )}
           </button>
         </div>
-        <h2 className="text-2xl font-bold text-center text-secondary dark:text-white mb-2">Welcome Back</h2>
-        <p className="text-gray-500 dark:text-gray-400 text-center mb-6">Sign in to your AmakaziWatch account</p>
+
+        <h2 className="text-2xl font-bold text-center text-secondary dark:text-white mb-2">
+          Welcome Back
+        </h2>
+        <p className="text-gray-500 dark:text-gray-400 text-center mb-6">
+          Sign in to your AmakaziWatch account
+        </p>
 
         <button
           onClick={() => googleLogin()}
           disabled={googleLoading}
           className="w-full flex items-center justify-center gap-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-white py-3 rounded-lg font-semibold hover:bg-gray-50 dark:hover:bg-gray-700 transition mb-4 disabled:opacity-50"
         >
-          {googleLoading ? <LoadingSpinner size="sm" /> : <><Chrome className="w-5 h-5" /> Sign in with Google</>}
+          {googleLoading ? (
+            <LoadingSpinner size="sm" />
+          ) : (
+            <>
+              <Chrome className="w-5 h-5" /> Sign in with Google
+            </>
+          )}
         </button>
 
         <div className="relative my-4">
-          <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-gray-300 dark:border-gray-600"></div></div>
-          <div className="relative flex justify-center text-sm"><span className="px-2 bg-white dark:bg-secondary text-gray-500 dark:text-gray-400">or continue with email</span></div>
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-gray-300 dark:border-gray-600" />
+          </div>
+          <div className="relative flex justify-center text-sm">
+            <span className="px-2 bg-white dark:bg-secondary text-gray-500 dark:text-gray-400">
+              or continue with email
+            </span>
+          </div>
         </div>
 
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email or Username</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Email or Username
+            </label>
             <div className="relative">
-              <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
               <input
                 type="text"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-secondary dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                className="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-secondary dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                 placeholder="Enter your email or username"
                 required
                 disabled={isLoading}
@@ -99,14 +152,16 @@ function Login() {
           </div>
 
           <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Password</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              Password
+            </label>
             <div className="relative">
-              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-secondary dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                className="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-secondary dark:text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                 placeholder="Enter your password"
                 required
                 disabled={isLoading}
@@ -125,10 +180,17 @@ function Login() {
         </form>
 
         <div className="mt-4 text-center">
-          <Link to="/register" className="text-sm text-primary hover:underline">Don't have an account? Register</Link>
+          <Link to="/register" className="text-sm text-primary hover:underline">
+            Don't have an account? Register
+          </Link>
         </div>
         <div className="mt-2 text-center">
-          <Link to="/reset-password" className="text-sm text-gray-500 dark:text-gray-400 hover:text-secondary dark:hover:text-white">Forgot password?</Link>
+          <Link
+            to="/reset-password"
+            className="text-sm text-gray-500 dark:text-gray-400 hover:text-secondary dark:hover:text-white"
+          >
+            Forgot password?
+          </Link>
         </div>
       </div>
     </div>

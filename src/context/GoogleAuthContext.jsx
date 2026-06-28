@@ -31,12 +31,8 @@ export function GoogleAuthProvider({ children }) {
 
         const { user, access, refresh } = response.data;
         
-        // Save to localStorage
-        localStorage.setItem('token', access);
-        localStorage.setItem('refresh', refresh);
-        localStorage.setItem('user', JSON.stringify(user));
-        
-        // Update auth context
+        // Save to localStorage and update auth context
+        // login() in AuthContext normalises the role automatically
         login(user, access, refresh);
         
         success('Successfully signed in with Google!');

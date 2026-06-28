@@ -7,7 +7,7 @@ import { getOrgInventory, getCaseMatches } from '../../api/org';
 import { useToast } from '../../context/ToastContext';
 
 function OrgStaffDashboard() {
-  const { success, error } = useToast();
+  const { error } = useToast();
   const [loading, setLoading] = useState(true);
   const [inventory, setInventory] = useState({ beds: 0, legal_slots: 0, counselors: 0 });
   const [referrals, setReferrals] = useState([]);

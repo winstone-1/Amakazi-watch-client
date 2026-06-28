@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Shield, Users, FileText, Building2, AlertTriangle, Sparkles, TrendingUp, CheckCircle, Clock3 } from 'lucide-react';
+import { Users, FileText, Building2, AlertTriangle, Sparkles, CheckCircle, Clock3 } from 'lucide-react';
 import GlassCard from '../common/GlassCard';
 import { getAdminUsers, getAdminReports, getAdminOrganisations } from '../../api/admin';
 import { useToast } from '../../context/ToastContext';
 
 function AdminDashboard() {
-  const { success, error } = useToast();
+  const { error } = useToast();
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({ total_users: 0, total_reports: 0, total_orgs: 0, pending_verifications: 0 });
   const [recentUsers, setRecentUsers] = useState([]);

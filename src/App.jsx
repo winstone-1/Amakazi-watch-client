@@ -30,6 +30,16 @@ import Scorecards from './pages/Scorecards';
 import Admin from './pages/Admin';
 import Profile from './pages/Profile';
 import Settings from './pages/Settings';
+import FAQ from './pages/FAQ';
+import Stories from './pages/Stories';
+import Resources from './pages/Resources';
+import Blog from './pages/Blog';
+import SupportGroups from './pages/SupportGroups';
+import Volunteer from './pages/Volunteer';
+import Donate from './pages/Donate';
+import Contact from './pages/Contact';
+import News from './pages/News';
+import ReportStatus from './pages/ReportStatus';
 
 // Feature Pages
 import SafetyTimer from './pages/features/SafetyTimer';
@@ -69,6 +79,7 @@ function App() {
                   <EmergencyButton />
                   <Chatbot />
                   <Routes>
+                    {/* Public routes */}
                     <Route path="/" element={<Landing />} />
                     <Route path="/about" element={<About />} />
                     <Route path="/how-it-works" element={<HowItWorks />} />
@@ -76,7 +87,15 @@ function App() {
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />
                     <Route path="/reset-password" element={<ResetPassword />} />
-                    
+                    <Route path="/faq" element={<FAQ />} />
+                    <Route path="/stories" element={<Stories />} />
+                    <Route path="/blog" element={<Blog />} />
+                    <Route path="/news" element={<News />} />
+                    <Route path="/contact" element={<Contact />} />
+                    <Route path="/donate" element={<Donate />} />
+                    <Route path="/volunteer" element={<Volunteer />} />
+
+                    {/* Protected routes */}
                     <Route element={<ProtectedRoute />}>
                       <Route element={<Layout />}>
                         <Route path="/dashboard" element={<Dashboard />} />
@@ -93,7 +112,10 @@ function App() {
                         <Route path="/settings" element={<Settings />} />
                         <Route path="/heatmap" element={<Heatmap />} />
                         <Route path="/subscriptions" element={<Subscriptions />} />
-                        
+                        <Route path="/resources" element={<Resources />} />
+                        <Route path="/support-groups" element={<SupportGroups />} />
+                        <Route path="/report-status" element={<ReportStatus />} />
+
                         <Route path="/safety/timer" element={<SafetyTimer />} />
                         <Route path="/safety/safe-word" element={<SafeWord />} />
                         <Route path="/safety/risk-assessment" element={<RiskAssessment />} />
