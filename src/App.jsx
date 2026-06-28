@@ -14,6 +14,7 @@ import Chatbot from './components/chat/Chatbot';
 import Landing from './pages/Landing';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import ResetPassword from './pages/ResetPassword';
 import Dashboard from './pages/Dashboard';
 import Reports from './pages/Reports';
 import Safety from './pages/Safety';
@@ -26,9 +27,6 @@ import Scorecards from './pages/Scorecards';
 import Admin from './pages/Admin';
 import Profile from './pages/Profile';
 import Settings from './pages/Settings';
-import Heatmap from './pages/Heatmap';
-import Subscriptions from './pages/Subscriptions';
-import RoleDashboards from './pages/RoleDashboards';
 
 // Feature Pages
 import SafetyTimer from './pages/features/SafetyTimer';
@@ -51,6 +49,8 @@ import Referrals from './pages/features/Referrals';
 import BulkSMS from './pages/features/BulkSMS';
 import Terms from './pages/features/Terms';
 import Privacy from './pages/features/Privacy';
+import Heatmap from './pages/features/Heatmap';
+import Subscriptions from './pages/features/Subscriptions';
 
 const GOOGLE_CLIENT_ID = '282565566079-kd9eh75lvoe4hleqnl3mgthv8p2qi3ht.apps.googleusercontent.com';
 
@@ -69,6 +69,7 @@ function App() {
                     <Route path="/" element={<Landing />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />
+                    <Route path="/reset-password" element={<ResetPassword />} />
                     
                     <Route element={<ProtectedRoute />}>
                       <Route element={<Layout />}>
@@ -83,19 +84,9 @@ function App() {
                         <Route path="/scorecards" element={<Scorecards />} />
                         <Route path="/admin" element={<Admin />} />
                         <Route path="/profile" element={<Profile />} />
-                        <Route path="/profile/survivor" element={<Profile />} />
-                        <Route path="/profile/counselor" element={<Profile />} />
-                        <Route path="/profile/org" element={<Profile />} />
-                        <Route path="/profile/county" element={<Profile />} />
-                        <Route path="/profile/admin" element={<Profile />} />
                         <Route path="/settings" element={<Settings />} />
                         <Route path="/heatmap" element={<Heatmap />} />
                         <Route path="/subscriptions" element={<Subscriptions />} />
-                        <Route path="/dashboard" element={<RoleDashboards />} />
-                        <Route path="/dashboard/counselor" element={<RoleDashboards />} />
-                        <Route path="/dashboard/org" element={<RoleDashboards />} />
-                        <Route path="/dashboard/county" element={<RoleDashboards />} />
-                        <Route path="/dashboard/admin" element={<RoleDashboards />} />
                         
                         <Route path="/safety/timer" element={<SafetyTimer />} />
                         <Route path="/safety/safe-word" element={<SafeWord />} />
