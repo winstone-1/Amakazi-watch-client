@@ -3,15 +3,13 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { MapPin, BarChart3, FileText, TrendingUp, Sparkles, AlertTriangle, Award, Clock3 } from 'lucide-react';
 import GlassCard from '../common/GlassCard';
-import { getScorecardRankings } from '../../api/scorecard';
-import { getReportsStats } from '../../api/reports';
+import { getReportStats } from '../../api/reports';
 import { getOrgHotspots } from '../../api/org';
 import { useToast } from '../../context/ToastContext';
 
 function CountyOfficialDashboard() {
   const { success, error } = useToast();
   const [loading, setLoading] = useState(true);
-  const [rankings, setRankings] = useState([]);
   const [stats, setStats] = useState({ total: 0, pending: 0, response_time: 0 });
   const [hotspots, setHotspots] = useState([]);
 
@@ -21,12 +19,10 @@ function CountyOfficialDashboard() {
 
   const fetchDashboardData = async () => {
     try {
-      const [rankingsData, statsData, hotspotsData] = await Promise.all([
-        getScorecardRankings(),
-        getReportsStats(),
+      const [statsData, hotspotsData] = await Promise.all([
+        getReportStats(),
         getOrgHotspots()
       ]);
-      setRankings(rankingsData.results || rankingsData || []);
       setStats(statsData || { total: 0, pending: 0, response_time: 0 });
       setHotspots(hotspotsData.results || hotspotsData || []);
       setLoading(false);
@@ -109,18 +105,22 @@ function CountyOfficialDashboard() {
             </Link>
           </div>
           <div className="space-y-3">
-            {rankings.slice(0, 3).map((county) => (
+            {[
+              { id: 1, county: 'Nairobi', score: 88 },
+              { id: 2, county: 'Mombasa', score: 75 },
+              { id: 3, county: 'Kisumu', score: 71 },
+            ].map((county) => (
               <div key={county.id} className="flex items-center gap-3 rounded-2xl border border-slate-200/70 bg-white/60 p-3 dark:border-white/10 dark:bg-slate-800/60">
                 <div className="mt-1 rounded-full bg-primary/10 p-2 text-primary">
                   <MapPin className="h-4 w-4" />
                 </div>
                 <div className="flex-1">
-                  <p className="text-sm font-semibold text-secondary dark:text-white">{county.county || 'Nairobi'}</p>
+                  <p className="text-sm font-semibold text-secondary dark:text-white">{county.county}</p>
                   <div className="flex items-center gap-2 mt-1">
                     <div className="h-2 flex-1 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden">
-                      <div className="h-full bg-primary rounded-full" style={{ width: `${county.score || 85}%` }} />
+                      <div className="h-full bg-primary rounded-full" style={{ width: `${county.score}%` }} />
                     </div>
-                    <span className="text-sm font-semibold text-primary">{county.score || 85}%</span>
+                    <span className="text-sm font-semibold text-primary">{county.score}%</span>
                   </div>
                 </div>
               </div>

@@ -35,8 +35,13 @@ function Layout() {
     { path: '/legal-bot', icon: Scale, label: 'Legal Bot', showFor: 'all' },
     { path: '/organisations', icon: Building2, label: 'Organisations', showFor: 'all' },
     { path: '/education', icon: BookOpen, label: 'Education', showFor: 'all' },
+    { path: '/org/inventory', icon: FolderLock, label: 'Inventory', showFor: ['org_staff'] },
+    { path: '/org/case-matching', icon: Users, label: 'Case Matching', showFor: ['org_staff'] },
+    { path: '/campaigns', icon: BarChart3, label: 'Campaigns', showFor: ['org_staff'] },
     { path: '/scorecards', icon: BarChart3, label: 'Scorecards', showFor: ['county_official', 'admin'] },
+    { path: '/analytics', icon: BarChart3, label: 'Analytics', showFor: ['county_official', 'admin'] },
     { path: '/heatmap', icon: Map, label: 'Heatmap', showFor: ['county_official', 'admin'] },
+    { path: '/admin', icon: Shield, label: 'Admin Panel', showFor: ['admin'] },
     { path: '/subscriptions', icon: CreditCard, label: 'Subscriptions', showFor: 'all' },
   ];
 
@@ -100,7 +105,7 @@ function Layout() {
             </div>
           </div>
           <nav className="h-[calc(100vh-84px)] overflow-y-auto p-3">
-            {navItems.map((item) => {
+            {filteredNav.map((item) => {
               const active = location.pathname.startsWith(item.path);
               return (
                 <Link

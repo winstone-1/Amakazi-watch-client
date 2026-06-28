@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Shield, Users, FileText, Building2, AlertTriangle, Sparkles, TrendingUp, CheckCircle, Clock3 } from 'lucide-react';
 import GlassCard from '../common/GlassCard';
-import { getAdminStats, getAdminUsers, getAdminReports, getAdminOrgs } from '../../api/admin';
+import { getAdminUsers, getAdminReports, getAdminOrganisations } from '../../api/admin';
 import { useToast } from '../../context/ToastContext';
 
 function AdminDashboard() {
@@ -20,16 +20,23 @@ function AdminDashboard() {
 
   const fetchDashboardData = async () => {
     try {
-      const [statsData, usersData, reportsData, orgsData] = await Promise.all([
-        getAdminStats(),
+      const [usersData, reportsData, orgsData] = await Promise.all([
         getAdminUsers(),
         getAdminReports(),
-        getAdminOrgs()
+        getAdminOrganisations()
       ]);
-      setStats(statsData || { total_users: 0, total_reports: 0, total_orgs: 0, pending_verifications: 0 });
-      setRecentUsers(usersData.results || usersData || []);
-      setPendingReports(reportsData.results || reportsData || []);
-      setPendingOrgs(orgsData.results || orgs || []);
+      const users = usersData.results || usersData || [];
+      const reports = reportsData.results || reportsData || [];
+      const orgs = orgsData.results || orgsData || [];
+      setStats({
+        total_users: users.length,
+        total_reports: reports.length,
+        total_orgs: orgs.length,
+        pending_verifications: orgs.filter(o => !o.is_verified).length,
+      });
+      setRecentUsers(users);
+      setPendingReports(reports);
+      setPendingOrgs(orgs);
       setLoading(false);
     } catch (err) {
       console.error('Failed to fetch dashboard data:', err);

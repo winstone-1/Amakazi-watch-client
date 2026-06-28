@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Building2, Users, FileText, AlertTriangle, Sparkles, Bed, Scale, CalendarDays } from 'lucide-react';
 import GlassCard from '../common/GlassCard';
-import { getOrgInventory, getCaseMatching } from '../../api/org';
+import { getOrgInventory, getCaseMatches } from '../../api/org';
 import { useToast } from '../../context/ToastContext';
 
 function OrgStaffDashboard() {
@@ -20,7 +20,7 @@ function OrgStaffDashboard() {
     try {
       const [inventoryData, referralsData] = await Promise.all([
         getOrgInventory(),
-        getCaseMatching()
+        getCaseMatches()
       ]);
       setInventory(inventoryData || { beds: 0, legal_slots: 0, counselors: 0 });
       setReferrals(referralsData.results || referralsData || []);

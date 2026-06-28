@@ -5,7 +5,7 @@ import { User, Mail, Phone, MapPin, Shield, Lock, Languages, CalendarDays, Star,
 import GlassCard from '../components/common/GlassCard';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
-import { api } from '../api/axios';
+import api from '../api/axios';
 
 const roleConfig = {
   survivor: { title: 'Survivor profile', badge: 'Personal safety profile' },

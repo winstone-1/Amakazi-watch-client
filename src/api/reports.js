@@ -21,6 +21,9 @@ export const getReportStats = async () => {
   return response.data;
 };
 
+// Alias
+export const getReportsStats = getReportStats;
+
 export const getReportHeatmap = async () => {
   const response = await api.get('reports/heatmap/');
   return response.data;

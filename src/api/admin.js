@@ -1,5 +1,11 @@
 import api from './axios';
 
+// Stats
+export const getAdminStats = async () => {
+  const response = await api.get('admin/users/stats/');
+  return response.data;
+};
+
 // Users Management
 export const getAdminUsers = async () => {
   const response = await api.get('admin/users/');
@@ -21,6 +27,9 @@ export const getAdminOrganisations = async () => {
   const response = await api.get('admin/organisations/');
   return response.data;
 };
+
+// Alias for backward compat
+export const getAdminOrgs = getAdminOrganisations;
 
 export const verifyAdminOrganisation = async (id, status) => {
   const response = await api.post(`admin/organisations/${id}/verify/`, { status });

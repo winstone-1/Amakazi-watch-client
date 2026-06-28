@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ShieldAlert, FileText, HeartHandshake, Clock3, AlertTriangle, ArrowRight, Phone, Sparkles } from 'lucide-react';
 import GlassCard from '../common/GlassCard';
-import { getReports, getReportsStats } from '../../api/reports';
+import { getReports, getReportStats } from '../../api/reports';
 import { triggerPanic } from '../../api/panic';
 import { useToast } from '../../context/ToastContext';
 
@@ -22,7 +22,7 @@ function SurvivorDashboard() {
     try {
       const [reportsData, statsData] = await Promise.all([
         getReports(),
-        getReportsStats()
+        getReportStats()
       ]);
       setReports(reportsData.results || reportsData || []);
       setStats(statsData || { total: 0, pending: 0, resolved: 0 });
