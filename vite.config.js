@@ -4,23 +4,26 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   server: {
-    port: 5173,
-    host: true,
-    hmr: {
-      host: 'localhost',
-      port: 5173,
-      protocol: 'ws'
-    },
+    port: 3000,
     proxy: {
       '/api': {
-        target: 'http://127.0.0.1:8000',
+        target: 'https://amakazi-watch.onrender.com',
         changeOrigin: true,
-        secure: false,
+        secure: true,
       },
     },
-    watch: {
-      usePolling: true,
-      interval: 1000,
+  },
+  build: {
+    outDir: 'dist',
+    sourcemap: false,
+    minify: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom', 'react-router-dom'],
+          maps: ['leaflet', 'react-leaflet', 'react-leaflet-cluster'],
+        },
+      },
     },
   },
 })
