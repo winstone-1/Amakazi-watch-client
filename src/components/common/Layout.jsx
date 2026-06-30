@@ -2,7 +2,7 @@ import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import { 
   Shield, Home, FileText, ShieldAlert, 
   FolderLock, Users, Scale, Building2, BookOpen, BarChart3, Bell, Map, CreditCard, UserCircle2,
-  Moon, Sun, Menu, X
+  Moon, Sun, Menu, X, ChevronLeft, ChevronRight
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
@@ -15,6 +15,9 @@ function Layout() {
   const { darkMode, toggleDarkMode } = useTheme();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarMinimized, setSidebarMinimized] = useState(() => {
+    return localStorage.getItem('sidebarMinimized') === 'true';
+  });
   const [showNotifications, setShowNotifications] = useState(false);
   const notificationsRef = useRef(null);
 
@@ -78,6 +81,12 @@ function Layout() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  const toggleSidebarMinimised = () => {
+    const newVal = !sidebarMinimized;
+    setSidebarMinimized(newVal);
+    localStorage.setItem('sidebarMinimized', String(newVal));
+  };
+
   return (
     <div className={`min-h-screen ${darkMode ? 'dark' : ''}`}>
       <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(255,107,53,0.14),_transparent_28%),linear-gradient(135deg,_#fdf6ec_0%,_#f8fafc_100%)] dark:bg-[radial-gradient(circle_at_top_left,_rgba(255,107,53,0.18),_transparent_28%),linear-gradient(135deg,_#1A2A3A_0%,_#16212e_100%)] transition-colors duration-300 flex">
@@ -91,19 +100,27 @@ function Layout() {
         </button>
 
         <aside className={`
-          fixed md:relative z-40 w-64 rounded-r-[28px] border-r border-white/70 bg-white/70 shadow-[20px_0_60px_-30px_rgba(15,23,42,0.3)] backdrop-blur-xl dark:border-white/10 dark:bg-slate-800/70
-          transition-transform duration-300 h-screen
+          fixed md:relative z-40 rounded-r-[28px] border-r border-white/70 bg-white/70 shadow-[20px_0_60px_-30px_rgba(15,23,42,0.3)] backdrop-blur-xl dark:border-white/10 dark:bg-slate-800/70
+          transition-all duration-300 h-screen flex flex-col
           ${sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
+          ${sidebarMinimized ? 'w-20' : 'w-64'}
         `}>
-          <div className="border-b border-slate-200/70 p-4 dark:border-white/10">
-            <div className="flex items-center gap-2">
-              <div className="rounded-2xl bg-primary/10 p-2">
+          <div className="flex items-center justify-between border-b border-slate-200/70 p-4 dark:border-white/10 h-[73px]">
+            <div className={`flex items-center gap-2 overflow-hidden transition-all duration-300 ${sidebarMinimized ? 'w-10' : 'w-auto'}`}>
+              <div className="rounded-2xl bg-primary/10 p-2 flex-shrink-0">
                 <Shield className="w-7 h-7 text-primary" />
               </div>
-              <span className="text-lg font-bold text-secondary dark:text-white">AmakaziWatch</span>
+              {!sidebarMinimized && <span className="text-lg font-bold text-secondary dark:text-white whitespace-nowrap">AmakaziWatch</span>}
             </div>
+            <button
+              onClick={toggleSidebarMinimised}
+              className="hidden md:flex rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-700 dark:hover:text-slate-300 focus:outline-none"
+              aria-label={sidebarMinimized ? 'Expand sidebar' : 'Collapse sidebar'}
+            >
+              {sidebarMinimized ? <ChevronRight className="w-5 h-5" /> : <ChevronLeft className="w-5 h-5" />}
+            </button>
           </div>
-          <nav className="h-[calc(100vh-84px)] overflow-y-auto p-3">
+          <nav className="flex-1 overflow-y-auto p-3 overflow-x-hidden">
             {filteredNav.map((item) => {
               const active = location.pathname.startsWith(item.path);
               return (
@@ -111,14 +128,15 @@ function Layout() {
                   key={item.path}
                   to={item.path}
                   onClick={() => setSidebarOpen(false)}
-                  className={`flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium transition ${
+                  title={sidebarMinimized ? item.label : undefined}
+                  className={`flex items-center gap-3 rounded-2xl px-4 py-3 mb-1 text-sm font-medium transition-all ${
                     active
                       ? 'bg-primary text-white shadow-lg'
                       : 'text-slate-600 hover:bg-orange-50 hover:text-primary dark:text-slate-300 dark:hover:bg-orange-900/20'
-                  }`}
+                  } ${sidebarMinimized ? 'justify-center px-0' : ''}`}
                 >
-                  <item.icon className="w-5 h-5" />
-                  <span>{item.label}</span>
+                  <item.icon className="w-5 h-5 flex-shrink-0" />
+                  {!sidebarMinimized && <span className="whitespace-nowrap">{item.label}</span>}
                 </Link>
               );
             })}

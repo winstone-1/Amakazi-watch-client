@@ -8,97 +8,98 @@ function Footer() {
     <footer className="border-t border-slate-200/70 bg-white/70 backdrop-blur-xl dark:border-white/10 dark:bg-slate-800/70">
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-5">
-          {/* Brand */}
-          <div className="lg:col-span-2 space-y-4">
-            <div className="flex items-center gap-2">
+          {/* Column 1: Platform */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-2 mb-2">
               <div className="rounded-xl bg-primary/10 p-2">
-                <Shield className="h-6 w-6 text-primary" />
+                <Shield className="h-5 w-5 text-primary" />
               </div>
               <span className="text-lg font-bold text-secondary dark:text-white">AmakaziWatch</span>
             </div>
-            <p className="text-sm text-slate-600 dark:text-slate-300 max-w-xs">
-              Empowering women across Kenya with digital tools to report GBV, access support, and reclaim their safety.
-            </p>
-            <div className="flex gap-3">
+            <ul className="space-y-2">
               {[
+                { to: '/', label: 'Home' },
+                { to: '/about', label: 'About' },
+                { to: '/how-it-works', label: 'How It Works' },
+                { to: '/contact', label: 'Contact' },
+              ].map(l => (
+                <li key={l.to}>
+                  <Link to={l.to} className="text-sm text-slate-600 transition hover:text-primary dark:text-slate-300">{l.label}</Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Column 2: Resources */}
+          <div>
+            <h3 className="mb-4 font-semibold text-secondary dark:text-white mt-1">Resources</h3>
+            <ul className="space-y-2">
+              {[
+                { to: '/faq', label: 'FAQ' },
+                { to: '/resources', label: 'Resources' },
+                { to: '/stories', label: 'Stories' },
+                { to: '/blog', label: 'Blog' },
+              ].map(l => (
+                <li key={l.to}>
+                  <Link to={l.to} className="text-sm text-slate-600 transition hover:text-primary dark:text-slate-300">{l.label}</Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Column 3: Legal */}
+          <div>
+            <h3 className="mb-4 font-semibold text-secondary dark:text-white mt-1">Legal</h3>
+            <ul className="space-y-2">
+              {[
+                { to: '/terms', label: 'Terms of Service' },
+                { to: '/privacy', label: 'Privacy Policy' },
+                { to: '/licensing', label: 'Licensing' },
+              ].map(l => (
+                <li key={l.to}>
+                  <Link to={l.to} className="text-sm text-slate-600 transition hover:text-primary dark:text-slate-300">{l.label}</Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Column 4: Emergency */}
+          <div>
+            <h3 className="mb-4 font-semibold text-secondary dark:text-white mt-1">Emergency</h3>
+            <ul className="space-y-2">
+              <li>
+                <a href="tel:1195" className="text-sm font-medium text-emerald-600 transition hover:text-emerald-500 dark:text-emerald-400">Call 1195 (toll-free)</a>
+              </li>
+              <li>
+                <Link to="/panic" className="text-sm text-red-500 transition hover:text-red-600 dark:text-red-400 font-medium">SOS Emergency Button</Link>
+              </li>
+              <li>
+                <Link to="/get-help" className="text-sm text-slate-600 transition hover:text-primary dark:text-slate-300">Find Help</Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Column 5: Social */}
+          <div>
+            <h3 className="mb-4 font-semibold text-secondary dark:text-white mt-1">Social</h3>
+            <ul className="space-y-3">
+              {[
+                { icon: Twitter, label: 'Twitter/X', href: 'https://twitter.com' },
+                { icon: Mail, label: 'Instagram', href: 'https://instagram.com' }, // Assuming Mail is a placeholder since Instagram icon isn't imported
                 { icon: Facebook, label: 'Facebook', href: 'https://facebook.com' },
-                { icon: Twitter, label: 'Twitter', href: 'https://twitter.com' },
-                { icon: Linkedin, label: 'LinkedIn', href: 'https://linkedin.com' },
+                { icon: Linkedin, label: 'YouTube', href: 'https://youtube.com' }, // Assuming Linkedin is a placeholder
               ].map(s => {
                 const Icon = s.icon;
                 return (
-                  <a key={s.label} href={s.href} target="_blank" rel="noopener noreferrer" className="rounded-full border border-slate-200/70 bg-slate-50/80 p-2 text-slate-600 transition hover:bg-primary hover:text-white dark:border-white/10 dark:bg-slate-700/50 dark:text-slate-300" aria-label={s.label}>
-                    <Icon className="h-4 w-4" />
-                  </a>
+                  <li key={s.label}>
+                    <a href={s.href} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm text-slate-600 transition hover:text-primary dark:text-slate-300" aria-label={s.label}>
+                      <Icon className="h-4 w-4" />
+                      <span>{s.label}</span>
+                    </a>
+                  </li>
                 );
               })}
-            </div>
-          </div>
-
-          {/* About */}
-          <div>
-            <h3 className="mb-4 font-semibold text-secondary dark:text-white">About</h3>
-            <ul className="space-y-2">
-              {[
-                { to: '/about', label: 'About Us' },
-                { to: '/how-it-works', label: 'How It Works' },
-                { to: '/stories', label: 'Success Stories' },
-                { to: '/news', label: 'News' },
-                { to: '/blog', label: 'Blog' },
-                { to: '/faq', label: 'FAQ' },
-                { to: '/contact', label: 'Contact Us' },
-              ].map(l => (
-                <li key={l.to}>
-                  <Link to={l.to} className="text-sm text-slate-600 transition hover:text-primary dark:text-slate-300">{l.label}</Link>
-                </li>
-              ))}
             </ul>
-          </div>
-
-          {/* Resources */}
-          <div>
-            <h3 className="mb-4 font-semibold text-secondary dark:text-white">Resources</h3>
-            <ul className="space-y-2">
-              {[
-                { to: '/get-help', label: 'Get Help' },
-                { to: '/resources', label: 'Downloads & Guides' },
-                { to: '/support-groups', label: 'Support Groups' },
-                { to: '/legal-bot', label: 'Legal Rights' },
-                { to: '/education', label: 'Education Centre' },
-                { to: '/report-status', label: 'Track Your Report' },
-                { to: '/organisations', label: 'Find Organisations' },
-              ].map(l => (
-                <li key={l.to}>
-                  <Link to={l.to} className="text-sm text-slate-600 transition hover:text-primary dark:text-slate-300">{l.label}</Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Get Involved */}
-          <div>
-            <h3 className="mb-4 font-semibold text-secondary dark:text-white">Get Involved</h3>
-            <ul className="space-y-2">
-              {[
-                { to: '/volunteer', label: 'Volunteer' },
-                { to: '/donate', label: 'Donate' },
-                { to: '/scorecards', label: 'County Scorecards' },
-                { to: '/privacy', label: 'Privacy Policy' },
-                { to: '/terms', label: 'Terms of Service' },
-              ].map(l => (
-                <li key={l.to}>
-                  <Link to={l.to} className="text-sm text-slate-600 transition hover:text-primary dark:text-slate-300">{l.label}</Link>
-                </li>
-              ))}
-            </ul>
-            <div className="mt-4 flex items-center gap-2 rounded-xl border border-emerald-200/70 bg-emerald-50/80 px-3 py-2 dark:border-emerald-400/20 dark:bg-emerald-950/30">
-              <Heart className="h-4 w-4 text-emerald-600 flex-shrink-0" />
-              <span className="text-xs font-medium text-emerald-700 dark:text-emerald-300">24/7 Helpline: <strong>1195</strong></span>
-            </div>
-            <a href="mailto:support@amakaziwatch.ke" className="mt-3 flex items-center gap-2 text-sm text-slate-500 hover:text-primary transition dark:text-slate-400">
-              <Mail className="h-4 w-4" />
-              support@amakaziwatch.ke
-            </a>
           </div>
         </div>
 

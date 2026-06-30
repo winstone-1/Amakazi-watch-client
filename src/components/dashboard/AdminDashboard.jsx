@@ -2,11 +2,13 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Users, FileText, Building2, AlertTriangle, Sparkles, CheckCircle, Clock3 } from 'lucide-react';
-import GlassCard from '../common/GlassCard';
+import AnimatedCard from '../common/AnimatedCard';
 import { getAdminUsers, getAdminReports, getAdminOrganisations } from '../../api/admin';
 import { useToast } from '../../context/ToastContext';
+import { useAuth } from '../../context/AuthContext';
 
 function AdminDashboard() {
+  const { user } = useAuth();
   const { error } = useToast();
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({ total_users: 0, total_reports: 0, total_orgs: 0, pending_verifications: 0 });
@@ -57,20 +59,20 @@ function AdminDashboard() {
 
   return (
     <div className="space-y-6 transition-colors duration-300">
-      <GlassCard className="p-6 sm:p-8">
+      <AnimatedCard className="p-6 sm:p-8">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-orange-200/70 bg-orange-50/80 px-3 py-1 text-sm font-semibold text-primary dark:border-orange-400/20 dark:bg-orange-950/30">
               <Sparkles className="h-4 w-4" />
               Admin Dashboard
             </div>
-            <h1 className="text-3xl font-black text-secondary dark:text-white">System Overview</h1>
+            <h1 className="text-3xl font-black text-secondary dark:text-white">Welcome, {user?.username || 'System Administrator'}.</h1>
             <p className="mt-2 max-w-2xl text-sm text-slate-600 dark:text-slate-300">
               Monitor platform performance, manage users, moderate content, and oversee organization verifications.
             </p>
           </div>
         </div>
-      </GlassCard>
+      </AnimatedCard>
 
       <div className="grid gap-4 md:grid-cols-4">
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
