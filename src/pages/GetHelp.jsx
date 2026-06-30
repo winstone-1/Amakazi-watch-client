@@ -1,10 +1,13 @@
 import { motion } from 'framer-motion';
-import { Phone, Shield, MapPin, Heart, AlertTriangle, ArrowRight, ExternalLink, Clock, Scale } from 'lucide-react';
+import { Phone, Shield, MapPin, Heart, AlertTriangle, ArrowRight, Clock, Scale } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import GlassCard from '../components/common/GlassCard';
+import PublicNav from '../components/common/PublicNav';
 import Footer from '../components/common/Footer';
+import { useTheme } from '../context/ThemeContext';
 
 function GetHelp() {
+  const { darkMode } = useTheme();
   const emergencyContacts = [
     { number: '1195', name: 'National GBV Helpline', description: '24/7 toll-free support' },
     { number: '999', name: 'Police Emergency', description: 'Immediate police response' },
@@ -19,7 +22,9 @@ function GetHelp() {
   ];
 
   return (
+    <div className={`min-h-screen ${darkMode ? 'dark' : ''}`}>
     <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(255,107,53,0.14),_transparent_28%),linear-gradient(135deg,_#fdf6ec_0%,_#f8fafc_100%)] dark:bg-[radial-gradient(circle_at_top_left,_rgba(255,107,53,0.18),_transparent_28%),linear-gradient(135deg,_#1A2A3A_0%,_#16212e_100%)] transition-colors duration-300">
+      <PublicNav />
       <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
         {/* Hero Section */}
         <motion.div
@@ -214,6 +219,7 @@ function GetHelp() {
         </motion.div>
         <Footer />
       </div>
+    </div>
     </div>
   );
 }

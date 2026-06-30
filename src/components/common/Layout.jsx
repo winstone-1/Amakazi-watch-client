@@ -1,6 +1,6 @@
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import { 
-  Shield, LogOut, Home, FileText, ShieldAlert, 
+  Shield, Home, FileText, ShieldAlert, 
   FolderLock, Users, Scale, Building2, BookOpen, BarChart3, Bell, Map, CreditCard, UserCircle2,
   Moon, Sun, Menu, X
 } from 'lucide-react';
@@ -11,42 +11,37 @@ import { useEffect, useRef, useState } from 'react';
 import Footer from './Footer';
 
 function Layout() {
-  const { logout, user } = useAuth();
-  const { success } = useToast();
+  const { user } = useAuth();
   const { darkMode, toggleDarkMode } = useTheme();
-  const navigate = useNavigate();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const notificationsRef = useRef(null);
 
-  const handleLogout = () => {
-    logout();
-    success('Logged out successfully');
-    navigate('/login');
-  };
+  // handleLogout moved to Settings page
 
   const navItems = [
-    { path: '/dashboard',       icon: Home,       label: 'Dashboard',     showFor: 'all' },
-    { path: '/reports',         icon: FileText,   label: 'Reports',       showFor: 'all' },
-    { path: '/safety',          icon: ShieldAlert,label: 'Safety',        showFor: ['survivor'] },
-    { path: '/vault',           icon: FolderLock, label: 'Vault',         showFor: ['survivor'] },
-    { path: '/peer-support',    icon: Users,      label: 'Peer Support',  showFor: ['survivor', 'counselor'] },
-    { path: '/legal-bot',       icon: Scale,      label: 'Legal Bot',     showFor: 'all' },
-    { path: '/organisations',   icon: Building2,  label: 'Organisations', showFor: 'all' },
-    { path: '/education',       icon: BookOpen,   label: 'Education',     showFor: 'all' },
-    { path: '/org/inventory',   icon: FolderLock, label: 'Inventory',     showFor: ['org_staff'] },
-    { path: '/org/case-matching', icon: Users,    label: 'Case Matching', showFor: ['org_staff'] },
-    { path: '/campaigns',       icon: BarChart3,  label: 'Campaigns',     showFor: ['org_staff'] },
-    { path: '/scorecards',      icon: BarChart3,  label: 'Scorecards',    showFor: ['county_official', 'admin'] },
-    { path: '/analytics',       icon: BarChart3,  label: 'Analytics',     showFor: ['county_official', 'admin'] },
-    { path: '/heatmap',         icon: Map,        label: 'Heatmap',       showFor: ['county_official', 'admin'] },
-    { path: '/admin',           icon: Shield,     label: 'Admin Panel',   showFor: ['admin'] },
-    { path: '/resources',       icon: BookOpen,   label: 'Resources',     showFor: 'all' },
-    { path: '/support-groups',  icon: Users,      label: 'Support Groups',showFor: 'all' },
-    { path: '/report-status',   icon: FileText,   label: 'Track Report',  showFor: 'all' },
-    { path: '/subscriptions',   icon: CreditCard, label: 'Subscriptions', showFor: 'all' },
-    { path: '/profile',         icon: UserCircle2,label: 'Profile',       showFor: 'all' },
+    { path: '/dashboard',       icon: Home,       label: 'Dashboard',      showFor: 'all' },
+    { path: '/reports',         icon: FileText,   label: 'Reports',        showFor: 'all' },
+    { path: '/safety',          icon: ShieldAlert,label: 'Safety',         showFor: ['survivor'] },
+    { path: '/vault',           icon: FolderLock, label: 'Vault',          showFor: ['survivor'] },
+    { path: '/peer-support',    icon: Users,      label: 'Peer Support',   showFor: ['survivor', 'counselor'] },
+    { path: '/legal-bot',       icon: Scale,      label: 'Legal Bot',      showFor: 'all' },
+    { path: '/organisations',   icon: Building2,  label: 'Organisations',  showFor: 'all' },
+    { path: '/education',       icon: BookOpen,   label: 'Education',      showFor: 'all' },
+    { path: '/org/inventory',   icon: FolderLock, label: 'Inventory',      showFor: ['org_staff'] },
+    { path: '/org/case-matching', icon: Users,    label: 'Case Matching',  showFor: ['org_staff'] },
+    { path: '/campaigns',       icon: BarChart3,  label: 'Campaigns',      showFor: ['org_staff'] },
+    { path: '/scorecards',      icon: BarChart3,  label: 'Scorecards',     showFor: ['county_official', 'admin'] },
+    { path: '/analytics',       icon: BarChart3,  label: 'Analytics',      showFor: ['county_official', 'admin'] },
+    { path: '/heatmap',         icon: Map,        label: 'Heatmap',        showFor: ['county_official', 'admin'] },
+    { path: '/admin',           icon: Shield,     label: 'Admin Panel',    showFor: ['admin'] },
+    { path: '/resources',       icon: BookOpen,   label: 'Resources',      showFor: 'all' },
+    { path: '/support-groups',  icon: Users,      label: 'Support Groups', showFor: 'all' },
+    { path: '/report-status',   icon: FileText,   label: 'Track Report',   showFor: 'all' },
+    { path: '/donate',          icon: CreditCard, label: 'Donate',         showFor: 'all' },
+    { path: '/profile',         icon: UserCircle2,label: 'Profile',        showFor: 'all' },
+    { path: '/settings',        icon: Shield,     label: 'Settings',       showFor: 'all' },
   ];
 
   const role = (user?.role || 'survivor').toString().toLowerCase();
@@ -202,13 +197,14 @@ function Layout() {
                     <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
                   </div>
                 </div>
-                <button
-                  onClick={handleLogout}
-                  className="rounded-xl p-2 text-slate-400 transition hover:bg-red-50 hover:text-red-500 focus:outline-none focus:ring-2 focus:ring-red-500"
-                  aria-label="Log out"
+                <Link
+                  to="/settings"
+                  className="rounded-xl p-2 text-slate-400 transition hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-700 dark:hover:text-slate-300 focus:outline-none focus:ring-2 focus:ring-primary"
+                  aria-label="Settings"
+                  title="Settings & Sign Out"
                 >
-                  <LogOut className="w-5 h-5" />
-                </button>
+                  <UserCircle2 className="w-5 h-5" />
+                </Link>
               </div>
             </div>
           </header>
