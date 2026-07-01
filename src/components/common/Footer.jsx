@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Shield, Heart, Mail, Facebook, Twitter, Linkedin } from 'lucide-react';
+import { Shield, Heart, Instagram, Facebook, Twitter, Linkedin } from 'lucide-react';
 
 function Footer() {
   const currentYear = new Date().getFullYear();
@@ -85,9 +85,9 @@ function Footer() {
             <ul className="space-y-3">
               {[
                 { icon: Twitter, label: 'Twitter/X', href: 'https://twitter.com' },
-                { icon: Mail, label: 'Instagram', href: 'https://instagram.com' }, // Assuming Mail is a placeholder since Instagram icon isn't imported
+                { icon: Instagram, label: 'Instagram', href: 'https://instagram.com' },
                 { icon: Facebook, label: 'Facebook', href: 'https://facebook.com' },
-                { icon: Linkedin, label: 'YouTube', href: 'https://youtube.com' }, // Assuming Linkedin is a placeholder
+                { icon: Linkedin, label: 'LinkedIn', href: 'https://linkedin.com' },
               ].map(s => {
                 const Icon = s.icon;
                 return (

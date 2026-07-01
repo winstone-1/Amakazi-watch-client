@@ -2,6 +2,9 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { BookOpen, Search, Calendar, Tag, ArrowRight, Share2 } from 'lucide-react';
 import GlassCard from '../components/common/GlassCard';
+import PublicNav from '../components/common/PublicNav';
+import Footer from '../components/common/Footer';
+import { useTheme } from '../context/ThemeContext';
 
 const categories = ['All', 'Awareness', 'Legal Updates', 'Events', 'Partnerships', 'Platform News'];
 
@@ -69,6 +72,7 @@ const posts = [
 ];
 
 function Blog() {
+  const { darkMode } = useTheme();
   const [search, setSearch] = useState('');
   const [activeCategory, setActiveCategory] = useState('All');
   const [expanded, setExpanded] = useState(null);
@@ -106,8 +110,12 @@ function Blog() {
   }
 
   return (
-    <div className="space-y-6">
-      <GlassCard className="p-6 sm:p-8">
+    <div className={`min-h-screen ${darkMode ? 'dark' : ''}`}>
+      <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(255,107,53,0.14),_transparent_28%),linear-gradient(135deg,_#fdf6ec_0%,_#f8fafc_100%)] dark:bg-[radial-gradient(circle_at_top_left,_rgba(255,107,53,0.18),_transparent_28%),linear-gradient(135deg,_#1A2A3A_0%,_#16212e_100%)] transition-colors duration-300">
+        <PublicNav />
+        <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+          <div className="space-y-6">
+            <GlassCard className="p-6 sm:p-8">
         <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-orange-200/70 bg-orange-50/80 px-3 py-1 text-sm font-semibold text-primary dark:border-orange-400/20 dark:bg-orange-950/30">
           <BookOpen className="h-4 w-4" />
           Blog
@@ -179,6 +187,10 @@ function Blog() {
           <p className="text-slate-500 dark:text-slate-400">No articles found.</p>
         </GlassCard>
       )}
+          </div>
+          <Footer />
+        </div>
+      </div>
     </div>
   );
 }

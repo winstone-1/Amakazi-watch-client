@@ -62,6 +62,7 @@ import Referrals from './pages/features/Referrals';
 import BulkSMS from './pages/features/BulkSMS';
 import Terms from './pages/features/Terms';
 import Privacy from './pages/features/Privacy';
+import Licensing from './pages/features/Licensing';
 import Heatmap from './pages/features/Heatmap';
 import Subscriptions from './pages/features/Subscriptions';
 
@@ -88,6 +89,9 @@ function AnimatedRoutes() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/donate" element={<Donate />} />
         <Route path="/volunteer" element={<Volunteer />} />
+        <Route path="/terms" element={<Terms />} />
+        <Route path="/privacy" element={<Privacy />} />
+        <Route path="/licensing" element={<Licensing />} />
 
         {/* Protected routes */}
         <Route element={<ProtectedRoute />}>
@@ -128,8 +132,6 @@ function AnimatedRoutes() {
             <Route path="/panic" element={<PanicButton />} />
             <Route path="/referrals" element={<Referrals />} />
             <Route path="/bulk-sms" element={<BulkSMS />} />
-            <Route path="/terms" element={<Terms />} />
-            <Route path="/privacy" element={<Privacy />} />
           </Route>
         </Route>
       </Routes>

@@ -2,6 +2,9 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Heart, Star, Filter, Users, Building2, UserCheck, Plus } from 'lucide-react';
 import GlassCard from '../components/common/GlassCard';
+import PublicNav from '../components/common/PublicNav';
+import Footer from '../components/common/Footer';
+import { useTheme } from '../context/ThemeContext';
 
 const categories = [
   { id: 'all', label: 'All Stories' },
@@ -99,14 +102,19 @@ function StoryCard({ story, onExpand }) {
 }
 
 function Stories() {
+  const { darkMode } = useTheme();
   const [activeCategory, setActiveCategory] = useState('all');
   const [expanded, setExpanded] = useState(null);
 
   const filtered = activeCategory === 'all' ? stories : stories.filter(s => s.category === activeCategory);
 
   return (
-    <div className="space-y-6">
-      {expanded && (
+    <div className={`min-h-screen ${darkMode ? 'dark' : ''}`}>
+      <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(255,107,53,0.14),_transparent_28%),linear-gradient(135deg,_#fdf6ec_0%,_#f8fafc_100%)] dark:bg-[radial-gradient(circle_at_top_left,_rgba(255,107,53,0.18),_transparent_28%),linear-gradient(135deg,_#1A2A3A_0%,_#16212e_100%)] transition-colors duration-300">
+        <PublicNav />
+        <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+          <div className="space-y-6">
+            {expanded && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={() => setExpanded(null)}>
           <div className="max-w-lg w-full bg-white dark:bg-slate-800 rounded-[24px] p-8 shadow-2xl" onClick={e => e.stopPropagation()}>
             <p className="text-xs text-slate-400 mb-1">{expanded.name} · {expanded.county} · {expanded.date}</p>
@@ -159,6 +167,10 @@ function Stories() {
           </a>
         </div>
       </GlassCard>
+          </div>
+          <Footer />
+        </div>
+      </div>
     </div>
   );
 }

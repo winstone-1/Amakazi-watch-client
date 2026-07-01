@@ -2,6 +2,9 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Mail, Phone, MapPin, Clock, Send, CheckCircle, Facebook, Twitter, Linkedin } from 'lucide-react';
 import GlassCard from '../components/common/GlassCard';
+import PublicNav from '../components/common/PublicNav';
+import Footer from '../components/common/Footer';
+import { useTheme } from '../context/ThemeContext';
 
 const emergencyContacts = [
   { label: 'National GBV Helpline', number: '1195', note: 'Free, 24/7', color: 'bg-red-500/10 text-red-600 dark:text-red-400' },
@@ -17,6 +20,7 @@ const offices = [
 ];
 
 function Contact() {
+  const { darkMode } = useTheme();
   const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' });
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -30,8 +34,12 @@ function Contact() {
   };
 
   return (
-    <div className="space-y-6">
-      <GlassCard className="p-6 sm:p-8">
+    <div className={`min-h-screen ${darkMode ? 'dark' : ''}`}>
+      <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(255,107,53,0.14),_transparent_28%),linear-gradient(135deg,_#fdf6ec_0%,_#f8fafc_100%)] dark:bg-[radial-gradient(circle_at_top_left,_rgba(255,107,53,0.18),_transparent_28%),linear-gradient(135deg,_#1A2A3A_0%,_#16212e_100%)] transition-colors duration-300">
+        <PublicNav />
+        <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+          <div className="space-y-6">
+            <GlassCard className="p-6 sm:p-8">
         <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-orange-200/70 bg-orange-50/80 px-3 py-1 text-sm font-semibold text-primary dark:border-orange-400/20 dark:bg-orange-950/30">
           <Mail className="h-4 w-4" />
           Contact Us
@@ -150,9 +158,13 @@ function Contact() {
               })}
             </div>
           </GlassCard>
+          <Footer />
         </div>
       </div>
     </div>
+  </div>
+</div>
+</div>
   );
 }
 
