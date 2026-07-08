@@ -109,3 +109,19 @@ export function useAuth() {
   if (!context) throw new Error('useAuth must be used within an AuthProvider');
   return context;
 }
+
+// Add this useEffect for auto-login
+useEffect(() => {
+  const token = localStorage.getItem('token');
+  const userData = localStorage.getItem('user');
+  
+  if (token && userData) {
+    try {
+      const user = JSON.parse(userData);
+      setUser(user);
+      setIsAuthenticated(true);
+    } catch (e) {
+      console.error('Auto-login failed:', e);
+    }
+  }
+}, []);

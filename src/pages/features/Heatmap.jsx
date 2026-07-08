@@ -1,49 +1,53 @@
 import { useState, useEffect } from 'react';
+import { MapContainer, TileLayer, CircleMarker, Popup, useMap } from 'react-leaflet';
 import { motion } from 'framer-motion';
 import { Map, TrendingUp, AlertTriangle, Sparkles, Download } from 'lucide-react';
 import GlassCard from '../../components/common/GlassCard';
-import SkeletonCard from '../../components/common/SkeletonCard';
-import { useToast } from '../../context/ToastContext';
-import { staggerContainer, fadeInUp } from '../../utils/animations';
+import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
+
+// Fix default icons
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
+  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+});
 
 const MOCK_HOTSPOTS = [
-  { county: 'Nairobi', incidents: 187, change: '+12%', level: 'high' },
-  { county: 'Mombasa', incidents: 94, change: '-3%', level: 'medium' },
-  { county: 'Kisumu', incidents: 76, change: '+8%', level: 'medium' },
-  { county: 'Nakuru', incidents: 63, change: '+2%', level: 'medium' },
-  { county: 'Eldoret', incidents: 45, change: '-5%', level: 'low' },
-  { county: 'Machakos', incidents: 38, change: '+1%', level: 'low' },
-  { county: 'Kakamega', incidents: 32, change: '+4%', level: 'low' },
-  { county: 'Kisii', incidents: 28, change: '-2%', level: 'low' },
+  { lat: -1.2921, lng: 36.8219, county: 'Nairobi', incidents: 187, level: 'high' },
+  { lat: -4.0435, lng: 39.6682, county: 'Mombasa', incidents: 94, level: 'medium' },
+  { lat: -0.1022, lng: 34.7617, county: 'Kisumu', incidents: 76, level: 'medium' },
+  { lat: -0.3031, lng: 36.0800, county: 'Nakuru', incidents: 63, level: 'medium' },
+  { lat: 0.5143, lng: 35.2698, county: 'Eldoret', incidents: 45, level: 'low' },
+  { lat: -1.5166, lng: 37.2634, county: 'Machakos', incidents: 38, level: 'low' },
+  { lat: 0.2827, lng: 34.7519, county: 'Kakamega', incidents: 32, level: 'low' },
+  { lat: -0.6773, lng: 34.7660, county: 'Kisii', incidents: 28, level: 'low' },
 ];
 
 const levelColors = {
-  high: { bg: 'bg-red-500', text: 'text-red-600 dark:text-red-400', badge: 'bg-red-100 text-red-700 dark:bg-red-950/30 dark:text-red-300' },
-  medium: { bg: 'bg-amber-500', text: 'text-amber-600 dark:text-amber-400', badge: 'bg-amber-100 text-amber-700 dark:bg-amber-950/30 dark:text-amber-300' },
-  low: { bg: 'bg-emerald-500', text: 'text-emerald-600 dark:text-emerald-400', badge: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-300' },
+  high: { fill: '#FF0000', radius: 20 },
+  medium: { fill: '#FFD700', radius: 15 },
+  low: { fill: '#00FF00', radius: 10 },
 };
 
 function Heatmap() {
-  const { error } = useToast();
   const [loading, setLoading] = useState(true);
   const [hotspots, setHotspots] = useState([]);
-  const maxIncidents = Math.max(...MOCK_HOTSPOTS.map(h => h.incidents));
 
   useEffect(() => {
-    // Try to load real data; fall back to mock
-    const timer = setTimeout(() => {
+    setTimeout(() => {
       setHotspots(MOCK_HOTSPOTS);
       setLoading(false);
     }, 800);
-    return () => clearTimeout(timer);
   }, []);
 
   return (
-    <div className="space-y-6 transition-colors duration-300">
+    <div className="space-y-6">
       <GlassCard className="p-6 sm:p-8">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-orange-200/70 bg-orange-50/80 px-3 py-1 text-sm font-semibold text-primary dark:border-orange-400/20 dark:bg-orange-950/30">
+            <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-orange-200/70 bg-orange-50/80 px-3 py-1 text-sm font-semibold text-primary">
               <Sparkles className="h-4 w-4" />
               Incident Analysis
             </div>
@@ -52,82 +56,66 @@ function Heatmap() {
               County-level GBV incident density and trend analysis across Kenya.
             </p>
           </div>
-          <button className="flex items-center gap-2 rounded-full border border-slate-200/70 bg-white/70 px-4 py-2 text-sm font-semibold text-slate-600 hover:border-primary hover:text-primary transition dark:border-white/10 dark:bg-slate-800/70 dark:text-slate-300">
-            <Download className="h-4 w-4" />
-            Export Data
-          </button>
         </div>
       </GlassCard>
 
-      {/* Map placeholder */}
+      {/* Map */}
       <GlassCard className="p-0 overflow-hidden">
-        <div className="relative h-72 sm:h-96 bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 flex items-center justify-center">
-          <div className="absolute inset-0 opacity-20" style={{
-            backgroundImage: 'radial-gradient(circle at 30% 40%, rgba(255,107,53,0.6) 0%, transparent 35%), radial-gradient(circle at 65% 30%, rgba(255,107,53,0.4) 0%, transparent 25%), radial-gradient(circle at 50% 70%, rgba(255,107,53,0.3) 0%, transparent 20%)'
-          }} />
-          <div className="text-center z-10">
-            <Map className="h-16 w-16 mx-auto text-slate-300 dark:text-slate-600 mb-3" />
-            <p className="font-semibold text-slate-500 dark:text-slate-400">Interactive map</p>
-            <p className="text-sm text-slate-400">Connect Leaflet/MapBox for live map rendering</p>
-          </div>
-          <div className="absolute bottom-4 right-4 flex flex-col gap-1.5 bg-white/80 dark:bg-slate-800/80 backdrop-blur rounded-xl p-3">
-            <div className="flex items-center gap-2 text-xs">
-              <div className="h-3 w-3 rounded-full bg-red-500" />
-              <span className="text-slate-600 dark:text-slate-300">High risk</span>
-            </div>
-            <div className="flex items-center gap-2 text-xs">
-              <div className="h-3 w-3 rounded-full bg-amber-500" />
-              <span className="text-slate-600 dark:text-slate-300">Medium risk</span>
-            </div>
-            <div className="flex items-center gap-2 text-xs">
-              <div className="h-3 w-3 rounded-full bg-emerald-500" />
-              <span className="text-slate-600 dark:text-slate-300">Low risk</span>
-            </div>
-          </div>
-        </div>
-      </GlassCard>
-
-      {/* County breakdown */}
-      <GlassCard className="p-6">
-        <h2 className="font-bold text-secondary dark:text-white mb-5">County Breakdown</h2>
-        {loading ? (
-          <div className="space-y-3">
-            {[1,2,3,4].map(i => <SkeletonCard key={i} lines={1} />)}
-          </div>
-        ) : (
-          <motion.div initial="hidden" animate="visible" variants={staggerContainer} className="space-y-3">
-            {hotspots.map((h, i) => {
-              const colors = levelColors[h.level];
-              const pct = Math.round((h.incidents / maxIncidents) * 100);
+        <div className="relative h-[500px] w-full">
+          <MapContainer
+            center={[-1.2921, 36.8219]}
+            zoom={7}
+            className="h-full w-full"
+            scrollWheelZoom={true}
+          >
+            <TileLayer
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+            {hotspots.map((point, index) => {
+              const colors = levelColors[point.level];
               return (
-                <motion.div key={h.county} variants={fadeInUp} className="flex items-center gap-4">
-                  <div className="w-24 flex-shrink-0">
-                    <p className="text-sm font-semibold text-secondary dark:text-white truncate">{h.county}</p>
-                    <p className={`text-xs ${h.change.startsWith('+') ? 'text-red-500' : 'text-emerald-500'}`}>
-                      {h.change}
-                    </p>
-                  </div>
-                  <div className="flex-1">
-                    <div className="h-2.5 rounded-full bg-slate-100 dark:bg-slate-700 overflow-hidden">
-                      <motion.div
-                        initial={{ width: 0 }}
-                        animate={{ width: `${pct}%` }}
-                        transition={{ duration: 0.8, delay: i * 0.07, ease: 'easeOut' }}
-                        className={`h-full rounded-full ${colors.bg}`}
-                      />
+                <CircleMarker
+                  key={index}
+                  center={[point.lat, point.lng]}
+                  radius={colors.radius}
+                  fillColor={colors.fill}
+                  color="#FFFFFF"
+                  weight={2}
+                  opacity={0.8}
+                  fillOpacity={0.6}
+                >
+                  <Popup>
+                    <div className="p-2">
+                      <h3 className="font-bold">{point.county}</h3>
+                      <p>Incidents: {point.incidents}</p>
+                      <p>Level: {point.level.toUpperCase()}</p>
                     </div>
-                  </div>
-                  <div className="flex items-center gap-2 flex-shrink-0">
-                    <span className="text-sm font-bold text-secondary dark:text-white w-8 text-right">{h.incidents}</span>
-                    <span className={`rounded-full px-2 py-0.5 text-xs font-semibold capitalize ${colors.badge}`}>
-                      {h.level}
-                    </span>
-                  </div>
-                </motion.div>
+                  </Popup>
+                </CircleMarker>
               );
             })}
-          </motion.div>
-        )}
+          </MapContainer>
+
+          {/* Legend */}
+          <div className="absolute bottom-4 right-4 bg-white/90 dark:bg-slate-800/90 p-3 rounded-xl shadow-lg z-[1000]">
+            <h4 className="text-sm font-semibold mb-2">Risk Level</h4>
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 rounded-full bg-red-500"></div>
+                <span className="text-sm">High</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 rounded-full bg-yellow-500"></div>
+                <span className="text-sm">Medium</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 rounded-full bg-green-500"></div>
+                <span className="text-sm">Low</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </GlassCard>
     </div>
   );
