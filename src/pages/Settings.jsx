@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Settings as SettingsIcon, Moon, Sun, Globe, Bell, Shield,
   LogOut, Download, AlertTriangle, Check, ChevronRight,
-  User, Lock, Type, Palette, Zap
+  User, Lock, Type, Palette
 } from 'lucide-react';
 import GlassCard from '../components/common/GlassCard';
 import { useTheme } from '../context/ThemeContext';
@@ -149,7 +149,6 @@ function Settings() {
       </GlassCard>
 
       <div className="space-y-4">
-        {/* Appearance */}
         <GlassCard className="p-6">
           <SectionHeader icon={Palette} title="Appearance" />
           <div className="space-y-4">
@@ -188,7 +187,6 @@ function Settings() {
           </div>
         </GlassCard>
 
-        {/* Language */}
         <GlassCard className="p-6">
           <SectionHeader icon={Globe} title="Language" color="text-sky-500" bg="bg-sky-500/10" />
           <div className="flex gap-3">
@@ -215,7 +213,6 @@ function Settings() {
           </div>
         </GlassCard>
 
-        {/* Notifications */}
         <GlassCard className="p-6">
           <SectionHeader icon={Bell} title="Notifications" color="text-violet-500" bg="bg-violet-500/10" />
           <div className="space-y-4">
@@ -239,7 +236,6 @@ function Settings() {
           </div>
         </GlassCard>
 
-        {/* Security */}
         <GlassCard className="p-6">
           <SectionHeader icon={Shield} title="Security" color="text-emerald-600" bg="bg-emerald-500/10" />
           <div className="space-y-4">
@@ -265,7 +261,6 @@ function Settings() {
           </div>
         </GlassCard>
 
-        {/* Data & Privacy */}
         <GlassCard className="p-6">
           <SectionHeader icon={Download} title="Data & Privacy" color="text-slate-500" bg="bg-slate-200/70 dark:bg-slate-700/50" />
           <button
@@ -286,7 +281,6 @@ function Settings() {
           </button>
         </GlassCard>
 
-        {/* Account */}
         <GlassCard className="p-6">
           <SectionHeader icon={User} title="Account" color="text-primary" bg="bg-primary/10" />
           <div className="flex items-center gap-4 rounded-xl border border-slate-200/70 bg-slate-50/80 px-4 py-3 dark:border-white/10 dark:bg-slate-800/50 mb-3">
@@ -300,7 +294,6 @@ function Settings() {
           </div>
         </GlassCard>
 
-        {/* Danger zone */}
         <GlassCard className="p-6 border-red-200/50 dark:border-red-400/20">
           <div className="flex items-center gap-3 mb-4">
             <div className="rounded-2xl bg-red-100 dark:bg-red-950/30 p-2">
@@ -311,9 +304,7 @@ function Settings() {
           <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">
             Signing out will end your current session on this device. Your data remains safe.
           </p>
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.97 }}
+          <button
             onClick={() => setShowLogoutModal(true)}
             className="flex items-center gap-2 rounded-full border border-red-200/70 bg-red-50/80 px-5 py-2.5 text-sm font-semibold text-red-600 hover:bg-red-100 transition dark:border-red-400/20 dark:bg-red-950/30 dark:text-red-400 dark:hover:bg-red-950/50"
           >
