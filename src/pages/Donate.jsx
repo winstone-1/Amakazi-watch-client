@@ -21,7 +21,6 @@ const tiers = [
 ];
 
 const donors = ['Anonymous', 'Sarah W.', 'John M.', 'Tech Kenya', 'Anonymous', 'Grace N.', 'BuildFund', 'Anonymous'];
-
 const impacts = [
   { value: '3,200+',   label: 'Survivors Supported' },
   { value: '150+',     label: 'Organizations Funded' },
@@ -68,7 +67,6 @@ function Donate() {
         }
       }, 5000);
 
-      // Timeout after 2 minutes
       setTimeout(() => {
         clearInterval(interval);
         setPolling(false);
@@ -81,7 +79,6 @@ function Donate() {
     return () => clearInterval(interval);
   }, [polling, checkoutId, submitted]);
 
-  // Handle STK Push
   const handleSTKPush = async () => {
     if (!phone || !finalAmount) {
       error('Please enter phone number and amount');
@@ -103,7 +100,6 @@ function Donate() {
     }
   };
 
-  // Handle Paystack
   const handlePaystack = async () => {
     setProcessing(true);
     try {
@@ -121,7 +117,6 @@ function Donate() {
     }
   };
 
-  // Handle Manual Payment
   const handleManualPayment = async () => {
     setProcessing(true);
     try {
@@ -130,8 +125,7 @@ function Donate() {
       setSubmitted(true);
       info('Manual payment instructions sent to your email.');
       success('Check your email for payment instructions.');
-    } catch (err) {
-      console.error('Manual payment error:', err);
+    } catch {
       error('Could not send instructions. Please use the details below.');
       setShowManualInstructions(true);
     } finally {
@@ -139,7 +133,6 @@ function Donate() {
     }
   };
 
-  // Handle donation submit
   const handleDonate = async (e) => {
     e.preventDefault();
     
@@ -164,15 +157,13 @@ function Donate() {
 
   return (
     <div className={`min-h-screen ${darkMode ? 'dark' : ''}`}>
-      <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(255,107,53,0.14),_transparent_28%),linear-gradient(135deg,_#fdf6ec_0%,_#f8fafc_100%)] dark:bg-[radial-gradient(circle_at_top_left,_rgba(255,107,53,0.18),_transparent_28%),linear-gradient(135deg,_#1A2A3A_0%,_#16212e_100%)] transition-colors duration-300">
+      <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(255,107,53,0.14),_transparent_28%),linear-gradient(135deg,_#fdf6ec_0%,_#f8fafc_100%)] dark:bg-[radial-gradient(circle_at_top_left,_rgba(255,107,53,0.18),_transparent_28%),linear-gradient(135deg,_#1A2A3A_0%,_#16212e_100%)]">
         <PublicNav />
-
         <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 space-y-6">
-
           {/* Hero */}
           <GlassCard className="p-6 sm:p-8">
             <div className="mb-3 flex items-center justify-between">
-              <div className="inline-flex items-center gap-2 rounded-full border border-orange-200/70 bg-orange-50/80 px-3 py-1 text-sm font-semibold text-primary dark:border-orange-400/20 dark:bg-orange-950/30">
+              <div className="inline-flex items-center gap-2 rounded-full border border-orange-200/70 bg-orange-50/80 px-3 py-1 text-sm font-semibold text-primary">
                 <Heart className="h-4 w-4" />
                 Support Our Mission
               </div>
@@ -316,7 +307,7 @@ function Donate() {
                       <div className="p-4 bg-amber-50 dark:bg-amber-950/20 rounded-xl border border-amber-200/50 dark:border-amber-400/20">
                         <p className="text-sm text-amber-700 dark:text-amber-300 flex items-start gap-2">
                           <Info className="h-5 w-5 flex-shrink-0 mt-0.5" />
-                          <span>Manual payment instructions will be sent to your email. You can also use the details in the sidebar.</span>
+                          <span>Manual payment instructions will be sent to your email.</span>
                         </p>
                       </div>
                     )}
@@ -327,15 +318,9 @@ function Donate() {
                       className="w-full flex items-center justify-center gap-2 rounded-full bg-primary py-3 text-sm font-semibold text-white shadow-lg hover:bg-orange-600 transition disabled:opacity-50"
                     >
                       {processing ? (
-                        <>
-                          <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/20 border-t-white"></div>
-                          Processing...
-                        </>
+                        <><div className="h-4 w-4 animate-spin rounded-full border-2 border-white/20 border-t-white"></div> Processing...</>
                       ) : (
-                        <>
-                          <Heart className="h-4 w-4" />
-                          Donate KES {finalAmount ? finalAmount.toLocaleString() : '—'}
-                        </>
+                        <><Heart className="h-4 w-4" /> Donate KES {finalAmount ? finalAmount.toLocaleString() : '—'}</>
                       )}
                     </button>
                   </form>
@@ -347,10 +332,10 @@ function Donate() {
                         Manual Payment Instructions
                       </h4>
                       <ul className="space-y-1 text-xs text-slate-500 dark:text-slate-400 list-disc pl-4">
-                        <li>Pay via M-Pesa Paybill: <strong className="text-secondary dark:text-white">123456</strong></li>
-                        <li>Account: <strong className="text-secondary dark:text-white">AMAKAZI</strong></li>
-                        <li>Amount: <strong className="text-secondary dark:text-white">KES {finalAmount.toLocaleString()}</strong></li>
-                        <li>Send confirmation to: <strong className="text-secondary dark:text-white">info@amakaziwatch.com</strong></li>
+                        <li>Pay via M-Pesa Paybill: <strong>123456</strong></li>
+                        <li>Account: <strong>AMAKAZI</strong></li>
+                        <li>Amount: <strong>KES {finalAmount.toLocaleString()}</strong></li>
+                        <li>Send confirmation to: <strong>info@amakaziwatch.com</strong></li>
                       </ul>
                     </motion.div>
                   )}
@@ -365,18 +350,14 @@ function Donate() {
                   <Lock className="h-4 w-4 text-emerald-600" />
                   <h3 className="font-semibold text-secondary dark:text-white text-sm">Secure & Transparent</h3>
                 </div>
-                <p className="text-xs text-slate-500 dark:text-slate-400">
-                  All donations are processed securely. We publish quarterly financial reports showing exactly how funds are used.
-                </p>
+                <p className="text-xs text-slate-500 dark:text-slate-400">All donations are processed securely.</p>
               </GlassCard>
 
               <GlassCard className="p-5">
                 <h3 className="font-semibold text-secondary dark:text-white text-sm mb-3">Recent Donors</h3>
                 <div className="flex flex-wrap gap-2">
                   {donors.map((d, i) => (
-                    <span key={i} className="rounded-full bg-slate-100 dark:bg-slate-700 px-2.5 py-1 text-xs text-slate-600 dark:text-slate-300">
-                      {d}
-                    </span>
+                    <span key={i} className="rounded-full bg-slate-100 dark:bg-slate-700 px-2.5 py-1 text-xs text-slate-600 dark:text-slate-300">{d}</span>
                   ))}
                 </div>
               </GlassCard>
@@ -384,8 +365,7 @@ function Donate() {
               <GlassCard className="p-5 bg-primary/5 dark:bg-primary/10 border border-primary/20 dark:border-primary/10">
                 <h3 className="font-semibold text-secondary dark:text-white text-sm mb-3">Need Help?</h3>
                 <div className="space-y-2 text-xs">
-                  <p className="text-slate-600 dark:text-slate-400">Contact our support team:</p>
-                  <p className="text-secondary dark:text-white font-medium">📧 support@amakaziwatch.com</p>
+                  <p className="text-slate-600 dark:text-slate-400">📧 support@amakaziwatch.com</p>
                   <p className="text-secondary dark:text-white font-medium">📞 +254 700 123 456</p>
                 </div>
               </GlassCard>

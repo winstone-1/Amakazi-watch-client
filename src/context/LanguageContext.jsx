@@ -8,6 +8,7 @@ export function LanguageProvider({ children }) {
   const switchLanguage = (lang) => {
     setLanguage(lang);
     localStorage.setItem('language', lang);
+    document.documentElement.lang = lang;
   };
 
   return (
@@ -18,5 +19,9 @@ export function LanguageProvider({ children }) {
 }
 
 export function useLanguage() {
-  return useContext(LanguageContext);
+  const context = useContext(LanguageContext);
+  if (!context) {
+    throw new Error('useLanguage must be used within a LanguageProvider');
+  }
+  return context;
 }
