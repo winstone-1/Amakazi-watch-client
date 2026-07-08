@@ -22,8 +22,6 @@ function PublicNav() {
 
   return (
     <nav className="sticky top-0 z-50 border-b border-white/60 bg-white/80 backdrop-blur-xl dark:border-white/10 dark:bg-slate-900/80 transition-colors duration-300">
-      </a>
-
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2 group" aria-label="AmakaziWatch home">
