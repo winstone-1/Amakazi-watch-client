@@ -109,7 +109,6 @@ function AnimatedRoutes() {
             <Route path="/profile" element={<Profile />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/heatmap" element={<Heatmap />} />
-            <Route path="/subscriptions" element={<Subscriptions />} />
             <Route path="/resources" element={<Resources />} />
             <Route path="/support-groups" element={<SupportGroups />} />
             <Route path="/report-status" element={<ReportStatus />} />

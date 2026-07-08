@@ -1,12 +1,68 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { MapPin, BarChart3, FileText, TrendingUp, Sparkles, AlertTriangle, Award, Clock3 } from 'lucide-react';
+import { MapPin, BarChart3, FileText, TrendingUp, Sparkles, AlertTriangle, Award, Clock3, Scale } from 'lucide-react';
 import AnimatedCard from '../common/AnimatedCard';
 import { getReportStats } from '../../api/reports';
 import { getOrgHotspots } from '../../api/org';
 import { useToast } from '../../context/ToastContext';
 import { useAuth } from '../../context/AuthContext';
+import { Bar } from 'react-chartjs-2';
+import '../../components/common/ChartSetup';
+
+const chartOptions = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: {
+    legend: { display: false },
+    tooltip: {
+      mode: 'index',
+      intersect: false,
+      backgroundColor: 'rgba(15, 23, 42, 0.9)',
+      titleColor: '#fff',
+      bodyColor: '#cbd5e1',
+      borderColor: 'rgba(255,255,255,0.1)',
+      borderWidth: 1,
+      padding: 12,
+      cornerRadius: 8,
+    },
+  },
+  scales: {
+    x: {
+      grid: { display: false, drawBorder: false },
+      ticks: { color: '#94a3b8', font: { size: 12, weight: '500' } },
+    },
+    y: {
+      grid: { color: 'rgba(148, 163, 184, 0.1)', drawBorder: false },
+      ticks: { color: '#94a3b8', font: { size: 12 } },
+      beginAtZero: true,
+    },
+  },
+};
+
+const trendData = [
+  { month: 'Jan', count: 45 },
+  { month: 'Feb', count: 52 },
+  { month: 'Mar', count: 48 },
+  { month: 'Apr', count: 61 },
+  { month: 'May', count: 82 },
+  { month: 'Jun', count: 65 },
+  { month: 'Jul', count: 40 },
+];
+
+const getChartData = () => ({
+  labels: trendData.map(d => d.month),
+  datasets: [
+    {
+      label: 'Reports',
+      data: trendData.map(d => d.count),
+      backgroundColor: '#f97316', // primary
+      borderRadius: 4,
+      barPercentage: 0.6,
+      categoryPercentage: 0.8,
+    },
+  ],
+});
 
 function CountyOfficialDashboard() {
   const { user } = useAuth();
@@ -209,24 +265,8 @@ function CountyOfficialDashboard() {
             <p className="text-sm text-slate-500 dark:text-slate-400">Monthly report trends in your jurisdiction</p>
           </div>
         </div>
-        <div className="flex items-end gap-4 h-48 mt-4 px-2">
-          {[
-            { month: 'Jan', count: 45 },
-            { month: 'Feb', count: 52 },
-            { month: 'Mar', count: 48 },
-            { month: 'Apr', count: 61 },
-            { month: 'May', count: 82 },
-            { month: 'Jun', count: 65 },
-            { month: 'Jul', count: 40 },
-          ].map((data) => (
-            <div key={data.month} className="flex-1 flex flex-col items-center justify-end gap-2 group h-full">
-              <span className="text-sm font-bold text-secondary dark:text-white opacity-0 group-hover:opacity-100 transition-opacity">{data.count}</span>
-              <div className="w-full max-w-[40px] bg-primary/20 rounded-t-md group-hover:bg-primary transition-all duration-300 cursor-pointer relative overflow-hidden" style={{ height: `${(data.count / 100) * 100}%` }}>
-                <div className="absolute bottom-0 left-0 right-0 bg-primary/30 h-1/2"></div>
-              </div>
-              <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">{data.month}</span>
-            </div>
-          ))}
+        <div className="h-64 mt-4 px-2">
+          <Bar options={chartOptions} data={getChartData()} />
         </div>
       </AnimatedCard>
     </div>

@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { User, Mail, Phone, MapPin, Shield, Lock, Languages, CalendarDays, Star, Building2, Users, BarChart3, KeyRound, Sparkles, Save, X } from 'lucide-react';
+import { User, Mail, Phone, MapPin, Shield, Lock, Languages, CalendarDays, Star, Building2, Users, BarChart3, KeyRound, Sparkles, Save, X, Camera, UploadCloud } from 'lucide-react';
 import GlassCard from '../components/common/GlassCard';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import api from '../api/axios';
+import { mockCloudinaryUpload } from '../utils/mockUpload';
 
 const roleConfig = {
   survivor: { title: 'Survivor profile', badge: 'Personal safety profile' },
@@ -31,6 +32,7 @@ function Profile() {
   const { success, error } = useToast();
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [formData, setFormData] = useState({
     username: '',
     email: '',
@@ -56,6 +58,23 @@ function Profile() {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleAvatarUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    setUploadingAvatar(true);
+    try {
+      const url = await mockCloudinaryUpload(file);
+      // Mock saving to context
+      updateUser({ ...user, avatar: url });
+      success('Profile picture updated successfully!');
+    } catch (err) {
+      error('Failed to upload image.');
+    } finally {
+      setUploadingAvatar(false);
+    }
   };
 
   const handleSave = async () => {
@@ -136,6 +155,31 @@ function Profile() {
       <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
         <GlassCard className="p-6">
           <h2 className="mb-4 text-lg font-semibold text-secondary dark:text-white">Profile Information</h2>
+          
+          <div className="mb-6 flex flex-col items-center sm:flex-row sm:items-start gap-4">
+            <div className="relative h-24 w-24 rounded-full border-4 border-white shadow-md dark:border-slate-800 bg-slate-100 flex items-center justify-center overflow-hidden">
+              {user?.avatar ? (
+                <img src={user.avatar} alt="Profile" className="h-full w-full object-cover" />
+              ) : (
+                <User className="h-10 w-10 text-slate-400" />
+              )}
+              {uploadingAvatar && (
+                <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                  <div className="h-5 w-5 animate-spin rounded-full border-b-2 border-white"></div>
+                </div>
+              )}
+            </div>
+            <div className="flex-1 text-center sm:text-left mt-2 sm:mt-0">
+              <h3 className="font-semibold text-secondary dark:text-white">Profile Picture</h3>
+              <p className="text-xs text-slate-500 mb-3">JPG, GIF or PNG. Max size of 800K</p>
+              <label className="cursor-pointer inline-flex items-center gap-2 rounded-full border border-slate-200/70 bg-white/70 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-primary/5 hover:text-primary hover:border-primary/30 dark:border-white/10 dark:bg-slate-800/70 dark:text-slate-200">
+                <Camera className="h-4 w-4" />
+                Change Picture
+                <input type="file" className="hidden" accept="image/*" onChange={handleAvatarUpload} disabled={uploadingAvatar} />
+              </label>
+            </div>
+          </div>
+
           <div className="space-y-4">
             <div className="rounded-2xl border border-slate-200/70 bg-white/70 p-4 dark:border-white/10 dark:bg-slate-800/70">
               <div className="flex items-center gap-2 text-sm font-semibold text-slate-500 dark:text-slate-400">

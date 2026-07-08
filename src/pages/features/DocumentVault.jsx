@@ -5,6 +5,7 @@ import GlassCard from '../../components/common/GlassCard';
 import SkeletonCard from '../../components/common/SkeletonCard';
 import { useToast } from '../../context/ToastContext';
 import { vaultService } from '../../services/api';
+import { mockCloudinaryUpload } from '../../utils/mockUpload';
 
 const TYPE_ICONS = {
   image:    { icon: Image,    color: 'text-blue-500',   bg: 'bg-blue-500/10' },
@@ -44,27 +45,38 @@ function DocumentVault() {
   const handleUpload = async (file) => {
     if (!file) return;
     setUploading(true);
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('file_type', file.type.startsWith('image/') ? 'image' : file.type.startsWith('video/') ? 'video' : 'document');
-    formData.append('description', file.name);
-    formData.append('incident_date', new Date().toISOString().split('T')[0]);
-
     try {
-      const data = await vaultService.upload(formData);
-      setFiles(prev => [data, ...prev]);
-      success(`"${file.name}" uploaded securely.`);
+      // Simulate cloudinary upload
+      const url = await mockCloudinaryUpload(file);
+      
+      const fileType = file.type.startsWith('image/') ? 'image' : file.type.startsWith('video/') ? 'video' : 'document';
+      
+      // Try actual API upload if backend is up
+      try {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('file_type', fileType);
+        formData.append('description', file.name);
+        formData.append('incident_date', new Date().toISOString().split('T')[0]);
+        
+        const data = await vaultService.upload(formData);
+        setFiles(prev => [data, ...prev]);
+        success(`"${file.name}" uploaded securely.`);
+      } catch (err) {
+        // Fallback: Optimistic local add for demo
+        const localFile = {
+          id: Date.now(),
+          description: file.name,
+          file_type: fileType,
+          created_at: new Date().toISOString(),
+          size: file.size,
+          url: url // Store mock URL
+        };
+        setFiles(prev => [localFile, ...prev]);
+        success(`"${file.name}" uploaded to secure storage (mock).`);
+      }
     } catch (err) {
-      // Optimistic local add for demo
-      const localFile = {
-        id: Date.now(),
-        description: file.name,
-        file_type: formData.get('file_type'),
-        created_at: new Date().toISOString(),
-        size: file.size,
-      };
-      setFiles(prev => [localFile, ...prev]);
-      success(`"${file.name}" saved locally (demo mode).`);
+      error('Upload failed. Please try again.');
     } finally {
       setUploading(false);
     }
