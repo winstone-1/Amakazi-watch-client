@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';  // Remove BrowserRouter import
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { AuthProvider } from './context/AuthContext';
 import { LanguageProvider } from './context/LanguageContext';
@@ -18,146 +18,173 @@ import HowItWorks from './pages/HowItWorks';
 import GetHelp from './pages/GetHelp';
 import Login from './pages/Login';
 import Register from './pages/Register';
-import ResetPassword from './pages/ResetPassword';
 import Dashboard from './pages/Dashboard';
+import Profile from './pages/Profile';
 import Reports from './pages/Reports';
+import Organisations from './pages/Organisations';
+import Heatmap from './pages/Heatmap';
+import Settings from './pages/Settings';
+import Donate from './pages/Donate';
+import Volunteer from './pages/Volunteer';
+import LegalBot from './pages/LegalBot';
 import Safety from './pages/Safety';
 import Vault from './pages/Vault';
 import PeerSupport from './pages/PeerSupport';
-import LegalBot from './pages/LegalBot';
-import Organisations from './pages/Organisations';
+import SupportGroups from './pages/SupportGroups';
 import Education from './pages/Education';
+import Stories from './pages/Stories';
+import FAQ from './pages/FAQ';
+import Blog from './pages/Blog';
+import News from './pages/News';
+import Contact from './pages/Contact';
+import Resources from './pages/Resources';
+import Subscriptions from './pages/Subscriptions';
 import Scorecards from './pages/Scorecards';
 import Admin from './pages/Admin';
-import Profile from './pages/Profile';
-import Settings from './pages/Settings';
-import FAQ from './pages/FAQ';
-import Stories from './pages/Stories';
-import Resources from './pages/Resources';
-import Blog from './pages/Blog';
-import SupportGroups from './pages/SupportGroups';
-import Volunteer from './pages/Volunteer';
-import Donate from './pages/Donate';
-import Contact from './pages/Contact';
-import News from './pages/News';
 import ReportStatus from './pages/ReportStatus';
 
-// Feature Pages
-import SafetyTimer from './pages/features/SafetyTimer';
-import SafeWord from './pages/features/SafeWord';
-import RiskAssessment from './pages/features/RiskAssessment';
-import EscapePlan from './pages/features/EscapePlan';
-import DocumentVault from './pages/features/DocumentVault';
-import PeerChat from './pages/features/PeerChat';
-import LegalQA from './pages/features/LegalQA';
-import ResourceInventory from './pages/features/ResourceInventory';
-import CaseMatching from './pages/features/CaseMatching';
-import Campaigns from './pages/features/Campaigns';
-import Workshops from './pages/features/Workshops';
-import Tips from './pages/features/Tips';
-import CountyScorecard from './pages/features/CountyScorecard';
-import Analytics from './pages/features/Analytics';
-import Notifications from './pages/features/Notifications';
-import PanicButton from './pages/features/PanicButton';
-import Referrals from './pages/features/Referrals';
-import BulkSMS from './pages/features/BulkSMS';
-import Terms from './pages/features/Terms';
-import Privacy from './pages/features/Privacy';
-import Licensing from './pages/features/Licensing';
-import Heatmap from './pages/features/Heatmap';
-
-import { useLocation } from 'react-router-dom';
-import { AnimatePresence } from 'framer-motion';
-
-function AnimatedRoutes() {
-  const location = useLocation();
-  return (
-    <AnimatePresence mode="wait">
-      <Routes location={location} key={location.pathname}>
-        {/* Public routes */}
-        <Route path="/" element={<Landing />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/how-it-works" element={<HowItWorks />} />
-        <Route path="/get-help" element={<GetHelp />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
-        <Route path="/faq" element={<FAQ />} />
-        <Route path="/stories" element={<Stories />} />
-        <Route path="/blog" element={<Blog />} />
-        <Route path="/news" element={<News />} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/donate" element={<Donate />} />
-        <Route path="/volunteer" element={<Volunteer />} />
-        <Route path="/terms" element={<Terms />} />
-        <Route path="/privacy" element={<Privacy />} />
-        <Route path="/licensing" element={<Licensing />} />
-
-        {/* Protected routes */}
-        <Route element={<ProtectedRoute />}>
-          <Route element={<Layout />}>
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/reports" element={<Reports />} />
-            <Route path="/safety" element={<Safety />} />
-            <Route path="/vault" element={<Vault />} />
-            <Route path="/peer-support" element={<PeerSupport />} />
-            <Route path="/legal-bot" element={<LegalBot />} />
-            <Route path="/organisations" element={<Organisations />} />
-            <Route path="/education" element={<Education />} />
-            <Route path="/scorecards" element={<Scorecards />} />
-            <Route path="/admin" element={<Admin />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="/heatmap" element={<Heatmap />} />
-            <Route path="/resources" element={<Resources />} />
-            <Route path="/support-groups" element={<SupportGroups />} />
-            <Route path="/report-status" element={<ReportStatus />} />
-
-            <Route path="/safety/timer" element={<SafetyTimer />} />
-            <Route path="/safety/safe-word" element={<SafeWord />} />
-            <Route path="/safety/risk-assessment" element={<RiskAssessment />} />
-            <Route path="/safety/escape-plan" element={<EscapePlan />} />
-            <Route path="/vault/documents" element={<DocumentVault />} />
-            <Route path="/peer/chat" element={<PeerChat />} />
-            <Route path="/legal/ask" element={<LegalQA />} />
-            <Route path="/org/inventory" element={<ResourceInventory />} />
-            <Route path="/org/case-matching" element={<CaseMatching />} />
-            <Route path="/campaigns" element={<Campaigns />} />
-            <Route path="/workshops" element={<Workshops />} />
-            <Route path="/tips" element={<Tips />} />
-            <Route path="/scorecard" element={<CountyScorecard />} />
-            <Route path="/analytics" element={<Analytics />} />
-            <Route path="/notifications" element={<Notifications />} />
-            <Route path="/panic" element={<PanicButton />} />
-            <Route path="/referrals" element={<Referrals />} />
-            <Route path="/bulk-sms" element={<BulkSMS />} />
-          </Route>
-        </Route>
-      </Routes>
-    </AnimatePresence>
-  );
-}
-
-const GOOGLE_CLIENT_ID = '282565566079-kd9eh75lvoe4hleqnl3mgthv8p2qi3ht.apps.googleusercontent.com';
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || 'your-client-id';
 
 function App() {
   return (
     <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
-      <Router>
-        <ThemeProvider>
-          <LanguageProvider>
-            <AuthProvider>
-              <ToastProvider>
-                <GoogleAuthProvider>
-                  <EmergencyButton />
-                  <Chatbot />
-                  <AnimatedRoutes />
-                </GoogleAuthProvider>
-              </ToastProvider>
-            </AuthProvider>
-          </LanguageProvider>
-        </ThemeProvider>
-      </Router>
+      <ThemeProvider>
+        <ToastProvider>
+          <AuthProvider>
+            <GoogleAuthProvider>
+              <LanguageProvider>
+                <Routes>
+                  {/* Public routes */}
+                  <Route path="/" element={<Landing />} />
+                  <Route path="/about" element={<About />} />
+                  <Route path="/how-it-works" element={<HowItWorks />} />
+                  <Route path="/get-help" element={<GetHelp />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/register" element={<Register />} />
+                  <Route path="/contact" element={<Contact />} />
+                  <Route path="/resources" element={<Resources />} />
+                  <Route path="/faq" element={<FAQ />} />
+                  <Route path="/blog" element={<Blog />} />
+                  <Route path="/news" element={<News />} />
+                  <Route path="/stories" element={<Stories />} />
+                  <Route path="/donate" element={<Donate />} />
+                  <Route path="/volunteer" element={<Volunteer />} />
+                  <Route path="/report-status" element={<ReportStatus />} />
+                  
+                  {/* Protected routes with Layout */}
+                  <Route path="/dashboard" element={
+                    <ProtectedRoute>
+                      <Layout>
+                        <Dashboard />
+                      </Layout>
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/profile" element={
+                    <ProtectedRoute>
+                      <Layout>
+                        <Profile />
+                      </Layout>
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/reports" element={
+                    <ProtectedRoute>
+                      <Layout>
+                        <Reports />
+                      </Layout>
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/organisations" element={
+                    <ProtectedRoute>
+                      <Layout>
+                        <Organisations />
+                      </Layout>
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/heatmap" element={
+                    <ProtectedRoute>
+                      <Layout>
+                        <Heatmap />
+                      </Layout>
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/settings" element={
+                    <ProtectedRoute>
+                      <Layout>
+                        <Settings />
+                      </Layout>
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/legal-bot" element={
+                    <ProtectedRoute>
+                      <Layout>
+                        <LegalBot />
+                      </Layout>
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/safety" element={
+                    <ProtectedRoute>
+                      <Layout>
+                        <Safety />
+                      </Layout>
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/vault" element={
+                    <ProtectedRoute>
+                      <Layout>
+                        <Vault />
+                      </Layout>
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/peer-support" element={
+                    <ProtectedRoute>
+                      <Layout>
+                        <PeerSupport />
+                      </Layout>
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/support-groups" element={
+                    <ProtectedRoute>
+                      <Layout>
+                        <SupportGroups />
+                      </Layout>
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/education" element={
+                    <ProtectedRoute>
+                      <Layout>
+                        <Education />
+                      </Layout>
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/subscriptions" element={
+                    <ProtectedRoute>
+                      <Layout>
+                        <Subscriptions />
+                      </Layout>
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/scorecards" element={
+                    <ProtectedRoute>
+                      <Layout>
+                        <Scorecards />
+                      </Layout>
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/admin" element={
+                    <ProtectedRoute requiredRole="admin">
+                      <Layout>
+                        <Admin />
+                      </Layout>
+                    </ProtectedRoute>
+                  } />
+                </Routes>
+                <EmergencyButton />
+                <Chatbot />
+              </LanguageProvider>
+            </GoogleAuthProvider>
+          </AuthProvider>
+        </ToastProvider>
+      </ThemeProvider>
     </GoogleOAuthProvider>
   );
 }

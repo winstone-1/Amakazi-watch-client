@@ -1,105 +1,74 @@
-import React from "react";
-import { createContext, useState, useContext, useEffect } from 'react';
+import React, { createContext, useState, useContext, useEffect } from 'react';
 
 const AuthContext = createContext();
-
-// Normalise user objects coming from different API shapes
-function normaliseUser(userData) {
-  if (!userData) return null;
-  return {
-    ...userData,
-    // Guarantee role is always present and lowercase
-    role: (userData.role || 'survivor').toLowerCase().trim(),
-  };
-}
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => {
     try {
-      const storedUser = localStorage.getItem('user');
-      if (storedUser && storedUser !== 'undefined' && storedUser !== 'null') {
-        return normaliseUser(JSON.parse(storedUser));
-      }
-    } catch (e) {
-      localStorage.removeItem('user');
+      return JSON.parse(localStorage.getItem('user') || 'null');
+    } catch {
+      return null;
     }
-    return null;
   });
-
   const [token, setToken] = useState(() => localStorage.getItem('token') || null);
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
+  // Auto-login useEffect - INSIDE the component body
   useEffect(() => {
-    try {
-      const storedToken = localStorage.getItem('token');
-      const storedUser = localStorage.getItem('user');
-
-      if (storedToken && storedUser && storedUser !== 'undefined' && storedUser !== 'null') {
-        const parsed = normaliseUser(JSON.parse(storedUser));
+    const storedToken = localStorage.getItem('token');
+    const storedUser = localStorage.getItem('user');
+    
+    if (storedToken && storedUser) {
+      try {
+        const parsedUser = JSON.parse(storedUser);
+        setUser(parsedUser);
         setToken(storedToken);
-        setUser(parsed);
         setIsAuthenticated(true);
-      } else {
+      } catch (error) {
+        console.error('Auto-login failed:', error);
         localStorage.removeItem('token');
         localStorage.removeItem('user');
-        setIsAuthenticated(false);
       }
-    } catch (e) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      setIsAuthenticated(false);
-    } finally {
-      setIsLoading(false);
     }
+    setIsLoading(false);
   }, []);
 
   const login = (userData, accessToken, refreshToken) => {
-    try {
-      const normalised = normaliseUser(userData);
-      console.log('[AuthContext.login] storing user:', normalised);
-
-      setUser(normalised);
-      setToken(accessToken);
-      setIsAuthenticated(true);
-      localStorage.setItem('token', accessToken);
-      if (refreshToken) localStorage.setItem('refresh', refreshToken);
-      localStorage.setItem('user', JSON.stringify(normalised));
-      return true;
-    } catch (e) {
-      console.error('[AuthContext.login] error:', e);
-      return false;
-    }
+    localStorage.setItem('token', accessToken);
+    localStorage.setItem('user', JSON.stringify(userData));
+    if (refreshToken) localStorage.setItem('refresh', refreshToken);
+    
+    setUser(userData);
+    setToken(accessToken);
+    setIsAuthenticated(true);
   };
 
   const logout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    localStorage.removeItem('refresh');
     setUser(null);
     setToken(null);
     setIsAuthenticated(false);
-    localStorage.removeItem('token');
-    localStorage.removeItem('refresh');
-    localStorage.removeItem('user');
-    window.location.replace('/login');
   };
 
-  const updateUser = (updatedData) => {
-    const newUser = normaliseUser({ ...user, ...updatedData });
-    setUser(newUser);
-    localStorage.setItem('user', JSON.stringify(newUser));
+  const updateUser = (userData) => {
+    const updatedUser = { ...user, ...userData };
+    localStorage.setItem('user', JSON.stringify(updatedUser));
+    setUser(updatedUser);
   };
 
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        token,
-        login,
-        logout,
-        updateUser,
-        isAuthenticated,
-        isLoading,
-      }}
-    >
+    <AuthContext.Provider value={{
+      user,
+      token,
+      isAuthenticated,
+      isLoading,
+      login,
+      logout,
+      updateUser,
+    }}>
       {children}
     </AuthContext.Provider>
   );
@@ -110,19 +79,3 @@ export function useAuth() {
   if (!context) throw new Error('useAuth must be used within an AuthProvider');
   return context;
 }
-
-// Add this useEffect for auto-login
-useEffect(() => {
-  const token = localStorage.getItem('token');
-  const userData = localStorage.getItem('user');
-  
-  if (token && userData) {
-    try {
-      const user = JSON.parse(userData);
-      setUser(user);
-      setIsAuthenticated(true);
-    } catch (e) {
-      console.error('Auto-login failed:', e);
-    }
-  }
-}, []);

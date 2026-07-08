@@ -22,12 +22,6 @@ function PublicNav() {
 
   return (
     <nav className="sticky top-0 z-50 border-b border-white/60 bg-white/80 backdrop-blur-xl dark:border-white/10 dark:bg-slate-900/80 transition-colors duration-300">
-      {/* Skip to content link for accessibility */}
-      <a
-        href="#main-content"
-        className="absolute left-2 top-2 z-[999] -translate-y-16 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white transition focus:translate-y-0"
-      >
-        Skip to content
       </a>
 
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
