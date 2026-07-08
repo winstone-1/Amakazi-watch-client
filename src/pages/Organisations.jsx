@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Building2, MapPin, Search, Star, Phone, Globe, AlertCircle, Sparkles, BookmarkPlus } from 'lucide-react';
 import GlassCard from '../components/common/GlassCard';
 import SkeletonCard from '../components/common/SkeletonCard';
+import OrganisationLogo from '../components/common/OrganisationLogo';
 import { getOrganisations } from '../api/org';
 import { useToast } from '../context/ToastContext';
 
@@ -25,9 +26,7 @@ function OrgCard({ org }) {
       <GlassCard className="p-5 h-full flex flex-col">
         <div className="flex items-start justify-between gap-3 mb-3">
           <div className="flex items-start gap-3">
-            <div className="rounded-2xl bg-primary/10 p-2.5 text-primary flex-shrink-0">
-              <Building2 className="h-5 w-5" />
-            </div>
+            <OrganisationLogo logo={org.logo} name={org.name} size="sm" />
             <div>
               <h3 className="font-bold text-secondary dark:text-white">{org.name}</h3>
               <div className="flex items-center gap-1.5 mt-0.5">

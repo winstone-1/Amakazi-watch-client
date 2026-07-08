@@ -1,4 +1,4 @@
-import api from './index';
+import api from './axios';
 
 // Request user data export
 export const exportUserData = async () => {
