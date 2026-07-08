@@ -64,7 +64,6 @@ import Terms from './pages/features/Terms';
 import Privacy from './pages/features/Privacy';
 import Licensing from './pages/features/Licensing';
 import Heatmap from './pages/features/Heatmap';
-import Subscriptions from './pages/features/Subscriptions';
 
 import { useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';

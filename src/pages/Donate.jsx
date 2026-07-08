@@ -6,6 +6,7 @@ import PublicNav from '../components/common/PublicNav';
 import Footer from '../components/common/Footer';
 import { useTheme } from '../context/ThemeContext';
 import { useToast } from '../context/ToastContext';
+import { initiateMpesaDonation, initiatePaystackDonation } from '../api/donations';
 
 const tiers = [
   { amount: 500,   label: 'KES 500',    impact: 'Emergency food supplies for one survivor for a week.',   color: 'border-sky-300 dark:border-sky-700' },
@@ -25,7 +26,7 @@ const impacts = [
 
 function Donate() {
   const { darkMode } = useTheme();
-  const { success } = useToast();
+  const { success, error } = useToast();
   const [selectedTier, setSelectedTier] = useState(5000);
   const [customAmount, setCustomAmount] = useState('');
   const [method, setMethod] = useState('mpesa');
@@ -35,16 +36,28 @@ function Donate() {
 
   const finalAmount = customAmount ? parseInt(customAmount) : selectedTier;
 
-  const handleDonate = (e) => {
+  const handleDonate = async (e) => {
     e.preventDefault();
     setProcessing(true);
     
-    // Simulate payment processing delay
-    setTimeout(() => {
+    try {
+      if (method === 'mpesa') {
+        await initiateMpesaDonation(phone, finalAmount);
+        setSubmitted(true);
+        success('M-Pesa payment prompt sent to your phone!');
+      } else {
+        const data = await initiatePaystackDonation(finalAmount);
+        if (data.authorization_url) {
+          window.location.href = data.authorization_url;
+        } else {
+          throw new Error('No authorization URL returned');
+        }
+      }
+    } catch (err) {
+      error('Payment initialization failed. Please try again.');
+    } finally {
       setProcessing(false);
-      setSubmitted(true);
-      success('Payment processed successfully! (Demo Mode)');
-    }, 2000);
+    }
   };
 
   return (

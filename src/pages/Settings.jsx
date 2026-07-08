@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Settings as SettingsIcon, Moon, Sun, Globe, Bell, Shield,
@@ -10,6 +10,7 @@ import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { fadeInUp, staggerContainer, modalVariants, backdropVariants } from '../utils/animations';
+import { exportUserData, toggle2FA, getUserSettings } from '../api/settings';
 
 function Toggle({ checked, onChange, label }) {
   return (
@@ -84,7 +85,7 @@ function SectionHeader({ icon: Icon, title, color = 'text-primary', bg = 'bg-pri
 function Settings() {
   const { darkMode, toggleDarkMode } = useTheme();
   const { logout, user } = useAuth();
-  const { success } = useToast();
+  const { success, error } = useToast();
 
   const [notifications, setNotifications] = useState({ push: true, email: true, sms: false });
   const [language, setLanguage] = useState('en');
@@ -92,12 +93,48 @@ function Settings() {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [exportLoading, setExportLoading] = useState(false);
   const [twoFAEnabled, setTwoFAEnabled] = useState(false);
+  const [isUpdating2FA, setIsUpdating2FA] = useState(false);
+
+  useEffect(() => {
+    // Initialize user settings
+    const initSettings = async () => {
+      try {
+        const data = await getUserSettings();
+        if (data && typeof data.two_factor_enabled !== 'undefined') {
+          setTwoFAEnabled(data.two_factor_enabled);
+        }
+      } catch (err) {
+        console.error('Failed to load user settings:', err);
+      }
+    };
+    initSettings();
+  }, []);
 
   const handleExport = async () => {
     setExportLoading(true);
-    await new Promise(r => setTimeout(r, 1400));
-    setExportLoading(false);
-    success('Data export requested! You\'ll receive an email within 24 hours.');
+    try {
+      await exportUserData();
+      success('Data export requested! You\'ll receive an email within 24 hours.');
+    } catch (err) {
+      error('Failed to request data export. Please try again later.');
+    } finally {
+      setExportLoading(false);
+    }
+  };
+
+  const handle2FAToggle = async () => {
+    if (isUpdating2FA) return;
+    setIsUpdating2FA(true);
+    const newValue = !twoFAEnabled;
+    try {
+      await toggle2FA(newValue);
+      setTwoFAEnabled(newValue);
+      success(newValue ? '2FA enabled' : '2FA disabled');
+    } catch (err) {
+      error('Failed to update 2FA settings.');
+    } finally {
+      setIsUpdating2FA(false);
+    }
   };
 
   const handleLogout = () => {
@@ -225,7 +262,7 @@ function Settings() {
                   <p className="font-medium text-secondary dark:text-white text-sm">Two-Factor Authentication</p>
                   <p className="text-xs text-slate-400">Add an extra layer of security to your account</p>
                 </div>
-                <Toggle checked={twoFAEnabled} onChange={() => { setTwoFAEnabled(v => !v); success(twoFAEnabled ? '2FA disabled' : '2FA enabled'); }} label="Toggle 2FA" />
+                <Toggle checked={twoFAEnabled} onChange={handle2FAToggle} label="Toggle 2FA" />
               </div>
               <div className="border-t border-slate-100 dark:border-white/5 pt-4">
                 <button className="flex items-center justify-between w-full rounded-xl border border-slate-200/70 bg-slate-50/80 px-4 py-3 dark:border-white/10 dark:bg-slate-800/50 hover:border-primary/30 transition group">
