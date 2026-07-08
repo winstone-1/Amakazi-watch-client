@@ -1,3 +1,4 @@
+import React from "react";
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ChevronLeft, ChevronRight, ZoomIn, FileText, Image as ImageIcon, Video } from 'lucide-react';

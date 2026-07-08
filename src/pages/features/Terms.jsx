@@ -1,3 +1,4 @@
+import React from "react";
 import { useState, useEffect } from 'react';
 import { FileText, Globe, CheckCircle, AlertTriangle } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';

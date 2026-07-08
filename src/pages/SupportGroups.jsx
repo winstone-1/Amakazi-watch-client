@@ -1,3 +1,4 @@
+import React from "react";
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Users, MapPin, Calendar, Phone, Search, UserPlus } from 'lucide-react';

@@ -1,3 +1,4 @@
+import React from "react";
 import { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { BarChart3, TrendingUp, Users, FileText, Download, Sparkles } from 'lucide-react';

@@ -1,3 +1,4 @@
+import React from "react";
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Heart, Shield, CheckCircle, Lock, AlertCircle, Smartphone, CreditCard, Send, Info } from 'lucide-react';

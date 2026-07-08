@@ -1,3 +1,4 @@
+import React from "react";
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ShieldCheck, AlertCircle, CheckCircle, ArrowRight, RotateCcw, Sparkles, Phone } from 'lucide-react';

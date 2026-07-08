@@ -1,3 +1,4 @@
+import React from "react";
 import { useState, useEffect } from 'react';
 import { Shield, CheckCircle, Lock, Eye } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';

@@ -1,3 +1,4 @@
+import React from "react";
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Search, FileText, CheckCircle, Clock3, AlertTriangle, MessageSquare, ArrowRight, Shield } from 'lucide-react';

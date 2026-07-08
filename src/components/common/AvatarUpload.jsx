@@ -1,3 +1,4 @@
+import React from "react";
 import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Camera, X, Check } from 'lucide-react';

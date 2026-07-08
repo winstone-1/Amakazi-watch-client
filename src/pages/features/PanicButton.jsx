@@ -1,3 +1,4 @@
+import React from "react";
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AlertTriangle, Phone, Shield, MapPin, Users, CheckCircle, Sparkles } from 'lucide-react';

@@ -1,3 +1,4 @@
+import React from "react";
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Building2, MapPin, Search, Star, Phone, Globe, AlertCircle, Sparkles, BookmarkPlus } from 'lucide-react';

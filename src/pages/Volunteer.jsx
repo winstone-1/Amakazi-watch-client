@@ -1,3 +1,4 @@
+import React from "react";
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Heart, Star, Users, Clock, Award, ArrowRight, CheckCircle } from 'lucide-react';

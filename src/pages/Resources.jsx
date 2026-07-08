@@ -1,3 +1,4 @@
+import React from "react";
 import { motion } from 'framer-motion';
 import { Download, BookOpen, Shield, Scale, Heart, Video, FileText, Phone } from 'lucide-react';
 import GlassCard from '../components/common/GlassCard';

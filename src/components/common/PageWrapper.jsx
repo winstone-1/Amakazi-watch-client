@@ -1,3 +1,4 @@
+import React from "react";
 import { motion } from 'framer-motion';
 import { pageTransition } from '../../utils/animations';
 import { Link } from 'react-router-dom';

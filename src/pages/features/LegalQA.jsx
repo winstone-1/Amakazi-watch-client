@@ -1,3 +1,4 @@
+import React from "react";
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Scale, Send, User, Bot, Sparkles, ArrowRight } from 'lucide-react';

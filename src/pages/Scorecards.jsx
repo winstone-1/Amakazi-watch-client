@@ -1,3 +1,4 @@
+import React from "react";
 import { BarChart3, Award, TrendingUp, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import GlassCard from '../components/common/GlassCard';

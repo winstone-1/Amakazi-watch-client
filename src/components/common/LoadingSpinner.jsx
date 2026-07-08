@@ -1,3 +1,4 @@
+import React from "react";
 function LoadingSpinner({ size = 'md', color = '#FF6B35' }) {
   const sizeClasses = {
     sm: 'w-6 h-6',

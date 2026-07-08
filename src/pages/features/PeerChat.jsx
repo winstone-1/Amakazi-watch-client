@@ -1,3 +1,4 @@
+import React from "react";
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Users, Send, MessageCircle, UserPlus, Phone, Bot, User, Sparkles, X } from 'lucide-react';

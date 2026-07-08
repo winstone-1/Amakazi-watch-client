@@ -1,3 +1,4 @@
+import React from "react";
 import { Link } from 'react-router-dom';
 import { FolderLock, Upload, FileText, Image, Video, Shield, Sparkles } from 'lucide-react';
 import GlassCard from '../components/common/GlassCard';

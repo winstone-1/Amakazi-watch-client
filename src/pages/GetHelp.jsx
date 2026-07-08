@@ -1,3 +1,4 @@
+import React from "react";
 import { motion } from 'framer-motion';
 import { Phone, Shield, MapPin, Heart, AlertTriangle, ArrowRight, Clock, Scale } from 'lucide-react';
 import { Link } from 'react-router-dom';

@@ -1,3 +1,4 @@
+import React from "react";
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Newspaper, Bell, Calendar, Tag, ArrowRight, CheckCircle } from 'lucide-react';

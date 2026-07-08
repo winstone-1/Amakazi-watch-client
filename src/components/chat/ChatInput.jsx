@@ -1,3 +1,4 @@
+import React from "react";
 import { Paperclip, Send } from 'lucide-react';
 
 function ChatInput({ value, onChange, onSend, disabled, placeholder }) {

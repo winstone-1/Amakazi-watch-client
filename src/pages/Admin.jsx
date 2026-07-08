@@ -1,3 +1,4 @@
+import React from "react";
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Shield, Users, FileText, Building2, AlertTriangle, CheckCircle, Sparkles, Trash2, UserCheck } from 'lucide-react';

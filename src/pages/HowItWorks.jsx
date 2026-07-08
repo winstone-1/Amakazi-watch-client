@@ -1,3 +1,4 @@
+import React from "react";
 import { motion } from 'framer-motion';
 import { Shield, Users, FileText, Phone, ArrowRight, CheckCircle, Clock, Lock, Heart, Scale } from 'lucide-react';
 import { Link } from 'react-router-dom';

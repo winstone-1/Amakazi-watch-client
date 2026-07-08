@@ -1,3 +1,4 @@
+import React from "react";
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Check, Crown, Sparkles, ShieldCheck, CreditCard, ArrowRight } from 'lucide-react';

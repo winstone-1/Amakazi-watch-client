@@ -1,3 +1,4 @@
+import React from "react";
 import { useState } from 'react';
 import { getOrgLogoSrc } from '../../utils/placeholders';
 import { getOptimizedImage } from '../../utils/cloudinary';

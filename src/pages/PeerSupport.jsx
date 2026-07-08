@@ -1,3 +1,4 @@
+import React from "react";
 import { Link } from 'react-router-dom';
 import { Users, MessageCircle, UserPlus, Sparkles } from 'lucide-react';
 import GlassCard from '../components/common/GlassCard';

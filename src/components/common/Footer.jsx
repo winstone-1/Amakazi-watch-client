@@ -1,3 +1,4 @@
+import React from "react";
 import { Link } from 'react-router-dom';
 import { Shield, Heart, Instagram, Facebook, Twitter, Linkedin } from 'lucide-react';
 

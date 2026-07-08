@@ -1,3 +1,4 @@
+import React from "react";
 import { useAuth } from '../context/AuthContext';
 import SurvivorDashboard from '../components/dashboard/SurvivorDashboard';
 import CounselorDashboard from '../components/dashboard/CounselorDashboard';

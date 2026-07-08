@@ -1,3 +1,4 @@
+import React from "react";
 function TypingIndicator() {
   return (
     <div className="flex justify-start">

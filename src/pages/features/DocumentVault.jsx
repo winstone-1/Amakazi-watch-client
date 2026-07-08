@@ -1,3 +1,4 @@
+import React from "react";
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Upload, Image, Video, FileText, Download, Trash2, FolderLock, Sparkles, AlertCircle, Shield } from 'lucide-react';

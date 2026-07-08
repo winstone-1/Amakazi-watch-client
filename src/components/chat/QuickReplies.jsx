@@ -1,3 +1,4 @@
+import React from "react";
 function QuickReplies({ replies, onSelect }) {
   return (
     <div className="flex flex-wrap gap-2 px-3 pb-2">

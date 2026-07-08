@@ -1,3 +1,4 @@
+import React from "react";
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Bell, CheckCheck, AlertTriangle, Info, Shield, Sparkles } from 'lucide-react';

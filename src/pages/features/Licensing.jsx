@@ -1,3 +1,4 @@
+import React from "react";
 import GlassCard from '../../components/common/GlassCard';
 import { ShieldCheck, Book, Award } from 'lucide-react';
 import PublicNav from '../../components/common/PublicNav';
