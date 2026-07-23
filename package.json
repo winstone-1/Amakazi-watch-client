@@ -2,7 +2,7 @@
   "name": "amakazi-watch",
   "version": "0.0.0",
   "scripts": {
-    "dev": "vite --port 3000",
+    "dev": "vite --port 5174",
     "build": "vite build",
     "preview": "vite preview"
   },
