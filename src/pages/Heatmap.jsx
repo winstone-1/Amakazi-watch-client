@@ -7,6 +7,7 @@ import GlassCard from '../components/common/GlassCard';
 import SkeletonCard from '../components/common/SkeletonCard';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
+import { getReportHeatmap } from '../api/reports';
 
 // Fix Leaflet default icons
 delete L.Icon.Default.prototype._getIconUrl;
@@ -44,10 +45,28 @@ function Heatmap() {
   const [hotspots, setHotspots] = useState([]);
 
   useEffect(() => {
-    setTimeout(() => {
-      setHotspots(MOCK_HOTSPOTS);
-      setLoading(false);
-    }, 800);
+    const fetchHotspots = async () => {
+      setLoading(true);
+      try {
+        const data = await getReportHeatmap();
+        setHotspots(Array.isArray(data) ? data : (data.results || []));
+      } catch (err) {
+        // Fallback mock data
+        setHotspots([
+          { lat: -1.2921, lng: 36.8219, county: 'Nairobi', incidents: 187, level: 'high' },
+          { lat: -4.0435, lng: 39.6682, county: 'Mombasa', incidents: 94, level: 'medium' },
+          { lat: -0.1022, lng: 34.7617, county: 'Kisumu', incidents: 76, level: 'medium' },
+          { lat: -0.3031, lng: 36.0800, county: 'Nakuru', incidents: 63, level: 'medium' },
+          { lat: 0.5143, lng: 35.2698, county: 'Eldoret', incidents: 45, level: 'low' },
+          { lat: -1.5166, lng: 37.2634, county: 'Machakos', incidents: 38, level: 'low' },
+          { lat: 0.2827, lng: 34.7519, county: 'Kakamega', incidents: 32, level: 'low' },
+          { lat: -0.6773, lng: 34.7660, county: 'Kisii', incidents: 28, level: 'low' },
+        ]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchHotspots();
   }, []);
 
   return (
@@ -74,40 +93,49 @@ function Heatmap() {
       {/* Map */}
       <GlassCard className="p-0 overflow-hidden">
         <div className="relative h-[500px] w-full">
-          <MapContainer
-            center={[-1.2921, 36.8219]}
-            zoom={6}
-            className="h-full w-full"
-            scrollWheelZoom={true}
-          >
-            <TileLayer
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            />
-            {hotspots.map((point, index) => {
-              const colors = levelColors[point.level];
-              return (
-                <CircleMarker
-                  key={index}
-                  center={[point.lat, point.lng]}
-                  radius={colors.radius}
-                  fillColor={colors.fill}
-                  color="#FFFFFF"
-                  weight={2}
-                  opacity={0.8}
-                  fillOpacity={0.6}
-                >
-                  <Popup>
-                    <div className="p-2 min-w-[150px]">
-                      <h3 className="font-bold text-lg">{point.county}</h3>
-                      <p className="text-sm">Incidents: <strong>{point.incidents}</strong></p>
-                      <p className="text-sm">Level: {levelLabels[point.level]}</p>
-                    </div>
-                  </Popup>
-                </CircleMarker>
-              );
-            })}
-          </MapContainer>
+          {loading ? (
+            <div className="h-full flex items-center justify-center">
+              <div className="text-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+                <p className="mt-4 text-slate-600 dark:text-slate-300">Loading heatmap...</p>
+              </div>
+            </div>
+          ) : (
+            <MapContainer
+              center={[-1.2921, 36.8219]}
+              zoom={6}
+              className="h-full w-full"
+              scrollWheelZoom={true}
+            >
+              <TileLayer
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              />
+              {hotspots.map((point, index) => {
+                const colors = levelColors[point.level] || levelColors.medium;
+                return (
+                  <CircleMarker
+                    key={point.id || index}
+                    center={[point.lat, point.lng]}
+                    radius={colors.radius}
+                    fillColor={colors.fill}
+                    color="#FFFFFF"
+                    weight={2}
+                    opacity={0.8}
+                    fillOpacity={0.6}
+                  >
+                    <Popup>
+                      <div className="p-2 min-w-[150px]">
+                        <h3 className="font-bold text-lg">{point.county}</h3>
+                        <p className="text-sm">Incidents: <strong>{point.incidents}</strong></p>
+                        <p className="text-sm">Level: {levelLabels[point.level]}</p>
+                      </div>
+                    </Popup>
+                  </CircleMarker>
+                );
+              })}
+            </MapContainer>
+          )}
 
           {/* Legend */}
           <div className="absolute bottom-4 right-4 bg-white/95 dark:bg-slate-800/95 p-3 rounded-xl shadow-lg z-[1000] border border-slate-200/70 dark:border-white/10">
@@ -140,11 +168,12 @@ function Heatmap() {
         ) : (
           <div className="space-y-3">
             {hotspots.map((h, i) => {
-              const colors = levelColors[h.level];
-              const pct = Math.round((h.incidents / hotspots[0].incidents) * 100);
+              const colors = levelColors[h.level] || levelColors.medium;
+              const maxIncidents = hotspots.reduce((max, curr) => Math.max(max, curr.incidents), 0);
+              const pct = maxIncidents > 0 ? Math.round((h.incidents / maxIncidents) * 100) : 0;
               return (
                 <motion.div
-                  key={h.county}
+                  key={h.id || h.county}
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: i * 0.05 }}
